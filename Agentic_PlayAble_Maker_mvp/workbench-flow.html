@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>Agentic 工作台 · 流程蓝图</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  body { background: var(--bg); padding: 32px 40px 80px; }
+  .wf-wrap { max-width: 1360px; margin: 0 auto; }
+
+  /* ── header ── */
+  .wf-h {
+    display: grid; grid-template-columns: 1.4fr 1fr;
+    gap: 32px; margin-bottom: 28px;
+    padding: 28px 32px;
+    background:
+      radial-gradient(700px 320px at 100% 0%, rgba(91,77,255,.10), transparent 55%),
+      radial-gradient(500px 280px at 0% 100%, rgba(255,122,61,.08), transparent 60%),
+      var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: var(--sh-md);
+  }
+  .wf-h .eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; letter-spacing: .12em; font-weight: 700;
+    color: var(--brand);
+    margin-bottom: 14px;
+  }
+  .wf-h .eyebrow::before {
+    content: ""; width: 18px; height: 1px; background: var(--brand);
+  }
+  .wf-h h1 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 38px; line-height: 1.05;
+    letter-spacing: -.02em; margin: 0 0 12px;
+  }
+  .wf-h h1 em { font-style: normal; color: var(--brand); }
+  .wf-h h1 .warm { color: var(--warm); }
+  .wf-h p { font-size: 13.5px; color: var(--ink-2); line-height: 1.65; margin: 0; max-width: 520px; }
+
+  .wf-stats {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .wf-stat {
+    padding: 14px 16px;
+    background: var(--bg-1, var(--bg));
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .wf-stat .k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: .1em;
+    color: var(--ink-3); font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .wf-stat .v {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 22px; line-height: 1;
+    letter-spacing: -.01em;
+  }
+  .wf-stat .v em { font-style: normal; font-size: 12px; color: var(--ink-3); font-weight: 600; margin-left: 4px; }
+
+  /* ── legend ── */
+  .wf-legend {
+    display: flex; flex-wrap: wrap; gap: 10px 16px;
+    padding: 14px 18px; margin-bottom: 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 12px;
+  }
+  .wf-legend strong { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .12em; color: var(--ink-3); font-weight: 700; }
+  .lg-item { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+  .lg-sw { width: 12px; height: 12px; border-radius: 4px; }
+  .lg-diamond { width: 10px; height: 10px; transform: rotate(45deg); background: var(--warn); border: 1px solid var(--warn); }
+  .lg-pill { padding: 1px 7px; border-radius: 99px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; font-weight: 700; letter-spacing: .04em; }
+
+  /* ── phase ── */
+  .phase {
+    margin-bottom: 28px;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--sh-md);
+  }
+  .phase-h {
+    padding: 20px 28px;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center;
+    position: relative;
+  }
+  .phase-h::after {
+    content: ""; position: absolute; left: 28px; right: 28px; bottom: 0;
+    height: 1px; background: var(--border);
+  }
+  .phase-num {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: grid; place-items: center;
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 28px; color: white;
+    box-shadow: 0 8px 22px -8px rgba(0,0,0,.25);
+  }
+  .phase-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; letter-spacing: .1em; font-weight: 700;
+    color: var(--ink-3);
+    margin-bottom: 6px;
+  }
+  .phase-title {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 26px; line-height: 1.1;
+    letter-spacing: -.015em; margin: 0;
+  }
+  .phase-title em { font-style: normal; color: var(--brand); font-family: "Instrument Serif", serif; font-weight: 400; font-size: 30px; }
+  .phase-sub { font-size: 12.5px; color: var(--ink-3); margin-top: 4px; }
+  .phase-meta {
+    text-align: right;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; color: var(--ink-3);
+    letter-spacing: .04em;
+  }
+  .phase-meta b { color: var(--ink-1); font-weight: 700; font-size: 13px; font-family: "Manrope", sans-serif; }
+
+  /* ── swimlane ── */
+  .lanes {
+    display: grid; grid-template-columns: 140px 1fr;
+    border-top: 1px solid var(--border);
+  }
+  .lanes-row {
+    display: contents;
+  }
+  .lane-label {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px dashed var(--border-2);
+    background: var(--bg-1, #fafaff);
+    display: flex; flex-direction: column; gap: 6px;
+    align-items: flex-start;
+  }
+  .lane-label:last-of-type { border-bottom: none; }
+  .lane-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 99px;
+    font-size: 11px; font-weight: 700;
+    font-family: "Manrope", sans-serif;
+  }
+  .lane-badge.kol { background: var(--warm-soft); color: var(--warm); }
+  .lane-badge.forge { background: var(--brand-soft); color: var(--brand); }
+  .lane-badge.sys { background: #e2f4e9; color: var(--ok); }
+  .lane-icon {
+    width: 24px; height: 24px; border-radius: 99px;
+    display: grid; place-items: center;
+    color: white; font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 12px;
+  }
+  .lane-note {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; color: var(--ink-3); line-height: 1.45;
+    letter-spacing: .03em;
+    margin-top: 4px;
+  }
+
+  .lane-content {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: stretch; gap: 12px;
+    overflow-x: auto;
+    position: relative;
+  }
+  .lane-content:last-of-type { border-bottom: none; }
+  .lane-content.empty {
+    padding-top: 24px; padding-bottom: 24px;
+    color: var(--ink-4); font-size: 11px;
+    font-style: italic;
+    align-items: center;
+  }
+
+  .step {
+    min-width: 180px; max-width: 240px;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--sh-sm);
+    display: flex; flex-direction: column; gap: 6px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .step.flex { flex: 1; }
+  .step-num {
+    position: absolute; top: -8px; left: 12px;
+    background: var(--ink-1); color: white;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; font-weight: 700;
+    padding: 2px 7px; border-radius: 99px;
+    letter-spacing: .04em;
+  }
+  .step.kol  .step-num { background: var(--warm); }
+  .step.forge .step-num { background: var(--brand); }
+  .step.sys   .step-num { background: var(--ok); }
+  .step h4 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 700; font-size: 13.5px;
+    line-height: 1.25; margin: 4px 0 0;
+    letter-spacing: -.005em;
+  }
+  .step .desc {
+    font-size: 11.5px; color: var(--ink-3); line-height: 1.5;
+  }
+  .step .tags {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin-top: auto;
+    padding-top: 4px;
+  }
+  .step .tag-mini {
+    padding: 2px 7px; border-radius: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; font-weight: 700;
+    background: var(--bg-2); color: var(--ink-2);
+    letter-spacing: .02em;
+  }
+  .step.kol   { border-color: rgba(255,122,61,.30); }
+  .step.forge { border-color: rgba(91,77,255,.30); }
+  .step.sys   { border-color: rgba(46,170,112,.30); }
+  .step.decision {
+    background: var(--warn-soft);
+    border: 1.5px solid var(--warn);
+    transform: rotate(0); /* keep flat for readability */
+    min-width: 220px;
+  }
+  .step.decision .step-num { background: var(--warn); }
+  .step.decision h4::before {
+    content: "◆"; color: var(--warn); margin-right: 6px;
+  }
+  .step.decision .branches {
+    display: flex; flex-direction: column; gap: 3px;
+    margin-top: 4px;
+  }
+  .step.decision .branches span {
+    font-size: 11px; color: var(--ink-2);
+    padding: 3px 7px; background: white; border-radius: 6px;
+    border: 1px dashed var(--warn-line, #ffe5b8);
+  }
+  .step.decision .branches span b { color: var(--warn); font-weight: 700; }
+
+  /* connector arrow */
+  .arrow {
+    flex-shrink: 0;
+    align-self: center;
+    width: 22px; height: 14px;
+    position: relative;
+    color: var(--ink-4);
+  }
+  .arrow::before {
+    content: ""; position: absolute; top: 50%; left: 0; right: 6px;
+    height: 1.5px; background: currentColor;
+    transform: translateY(-50%);
+  }
+  .arrow::after {
+    content: ""; position: absolute; top: 50%; right: 0;
+    width: 0; height: 0;
+    border: 5px solid transparent; border-left-color: currentColor;
+    transform: translateY(-50%);
+  }
+  .arrow.dashed::before { background: repeating-linear-gradient(to right, currentColor 0 4px, transparent 4px 8px); height: 1.5px; }
+  .arrow.thick { color: var(--brand); }
+  .arrow.thick::before { background: var(--brand); height: 2px; }
+  .arrow.thick::after { border-left-color: var(--brand); }
+  .arrow.loop { color: var(--warm); }
+  .arrow.loop::before { background: var(--warm); }
+  .arrow.loop::after { border-left-color: var(--warm); }
+
+  /* ── objects/artifacts side panel ── */
+  .panel-2col {
+    display: grid; grid-template-columns: 1.4fr 1fr;
+    gap: 24px; margin-top: 32px;
+  }
+  .obj-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px 26px;
+    box-shadow: var(--sh-sm);
+  }
+  .obj-card h3 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 18px; margin: 0 0 4px;
+    letter-spacing: -.01em;
+  }
+  .obj-card .sub { font-size: 12px; color: var(--ink-3); margin-bottom: 18px; }
+  .obj-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  }
+  .obj {
+    padding: 14px 14px 12px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg-1, #fafaff);
+    display: flex; flex-direction: column; gap: 6px;
+    min-height: 130px;
+  }
+  .obj-tag {
+    align-self: flex-start;
+    padding: 2px 7px; border-radius: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: .04em;
+  }
+  .obj-tag.t-brand { background: var(--brand); color: white; }
+  .obj-tag.t-warm  { background: var(--warm); color: white; }
+  .obj-tag.t-ok    { background: var(--ok); color: white; }
+  .obj-tag.t-ink   { background: var(--ink-1); color: white; }
+  .obj h4 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 700; font-size: 14.5px; margin: 0;
+    letter-spacing: -.005em;
+  }
+  .obj .obj-desc { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+  .obj .obj-fields {
+    margin-top: auto;
+    padding-top: 6px;
+    display: flex; flex-wrap: wrap; gap: 3px;
+  }
+  .obj .obj-fields span {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; padding: 1px 6px;
+    background: white; border: 1px dashed var(--border-2);
+    border-radius: 5px;
+    color: var(--ink-2);
+  }
+
+  /* state machine */
+  .sm-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 22px 26px; box-shadow: var(--sh-sm); }
+  .sm-card h3 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 18px; margin: 0 0 4px; }
+  .sm-card .sub { font-size: 12px; color: var(--ink-3); margin-bottom: 18px; }
+  .sm-row {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 12px;
+    font-size: 12.5px;
+    flex-wrap: wrap;
+  }
+  .sm-node {
+    padding: 6px 11px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    font-family: "Manrope", sans-serif;
+  }
+  .sm-node.idle    { background: var(--bg-2); color: var(--ink-2); }
+  .sm-node.brief   { background: var(--brand-soft); color: var(--brand); }
+  .sm-node.creating { background: var(--warm-soft); color: var(--warm); }
+  .sm-node.review  { background: #fdf3df; color: var(--warn); }
+  .sm-node.live    { background: var(--ok-soft); color: var(--ok); border: 1px solid var(--ok); }
+  .sm-node.evolve  { background: #efeeff; color: var(--brand); border: 1px dashed var(--brand); }
+  .sm-arr {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; color: var(--ink-3);
+    letter-spacing: .04em;
+  }
+
+  /* footnotes */
+  .foot {
+    margin-top: 32px;
+    padding: 20px 26px;
+    background: linear-gradient(95deg, var(--brand-soft) 0%, var(--warm-soft) 100%);
+    border-radius: 18px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;
+  }
+  .foot-item h4 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 14px; margin: 0 0 6px; letter-spacing: -.005em; }
+  .foot-item p { font-size: 12px; color: var(--ink-2); line-height: 1.55; margin: 0; }
+  .foot-item .num {
+    font-family: "Instrument Serif", serif;
+    font-size: 32px; color: var(--brand);
+    line-height: 1; margin-bottom: 2px;
+  }
+  .foot-item:nth-child(2) .num { color: var(--warm); }
+  .foot-item:nth-child(3) .num { color: var(--ok); }
+</style>
+</head>
+<body>
+
+<div class="wf-wrap">
+
+  <!-- HEADER -->
+  <div class="wf-h">
+    <div>
+      <div class="eyebrow">AGENTIC WORKBENCH · FLOW BLUEPRINT</div>
+      <h1>Agentic 工作台<br/>从 <em>一句话</em> 到 <span class="warm">8 平台同步</span> 的流程</h1>
+      <p>这张图把 KOL、Forge Agent、品牌/系统三方的协作拆成 4 个阶段、24 个节点。从打开工作台的那句"今天想做什么？"，到自进化闭环重新喂回工作流，每一步都标了角色、决策点和产物。</p>
+    </div>
+    <div class="wf-stats">
+      <div class="wf-stat"><div class="k">阶段</div><div class="v">4<em>个</em></div></div>
+      <div class="wf-stat"><div class="k">节点</div><div class="v">24<em>步</em></div></div>
+      <div class="wf-stat"><div class="k">关键对象</div><div class="v">6<em>个</em></div></div>
+      <div class="wf-stat"><div class="k">决策分叉</div><div class="v">5<em>处</em></div></div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="wf-legend">
+    <strong>LEGEND</strong>
+    <span class="lg-item"><span class="lg-sw" style="background:var(--warm)"></span> KOL · 你</span>
+    <span class="lg-item"><span class="lg-sw" style="background:var(--brand)"></span> Forge · AI Agent</span>
+    <span class="lg-item"><span class="lg-sw" style="background:var(--ok)"></span> 系统 / 品牌 / 资产</span>
+    <span class="lg-item"><span class="lg-diamond"></span> 决策点</span>
+    <span class="lg-item"><span class="lg-pill" style="background:var(--bg-2);color:var(--ink-2)">·5 - 12s·</span> 异步耗时</span>
+    <span class="lg-item"><span class="lg-pill" style="background:var(--warm-soft);color:var(--warm)">↺</span> 闭环回流</span>
+  </div>
+
+  <!-- PHASE A -->
+  <div class="phase">
+    <div class="phase-h">
+      <div class="phase-num" style="background:linear-gradient(135deg,#a89eff,#5b4dff)">A</div>
+      <div>
+        <div class="phase-tag">PHASE A · 起手</div>
+        <h2 class="phase-title">从一个 <em>意图</em> 开始</h2>
+        <div class="phase-sub">入口 → 意图捕获 → 资源挂载 · 通常 60 秒内完成</div>
+      </div>
+      <div class="phase-meta">用时 <b>~1 分钟</b><br/>消耗 0 积分</div>
+    </div>
+
+    <div class="lanes">
+      <div class="lane-label">
+        <div class="lane-badge kol"><span class="lane-icon" style="background:var(--warm)">A</span> KOL</div>
+        <div class="lane-note">你说出意图<br/>挑选已有资产</div>
+      </div>
+      <div class="lane-content">
+        <div class="step kol">
+          <span class="step-num">A1</span>
+          <h4>选一个入口</h4>
+          <div class="desc">"新建 Agentic Playable" / 从模板套用 / 从通知跳转 / 回复品牌简报</div>
+          <div class="tags">
+            <span class="tag-mini">首页</span><span class="tag-mini">模板中心</span><span class="tag-mini">信息中心</span>
+          </div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step kol">
+          <span class="step-num">A2</span>
+          <h4>用一句话描述</h4>
+          <div class="desc">大文本框：受众、目标、节奏。自然语言即可，不需要结构化字段。</div>
+          <div class="tags"><span class="tag-mini">⌘+Enter</span><span class="tag-mini">语音/录入</span></div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step kol">
+          <span class="step-num">A3</span>
+          <h4>可选 · 挂资产</h4>
+          <div class="desc">资料 · 分身 · 模板，三选 N。挂上越多，Forge 反问越少。</div>
+          <div class="tags"><span class="tag-mini">资料</span><span class="tag-mini">分身</span><span class="tag-mini">模板</span></div>
+        </div>
+      </div>
+
+      <div class="lane-label">
+        <div class="lane-badge forge"><span class="lane-icon" style="background:var(--brand)">F</span> Forge</div>
+        <div class="lane-note">监听 · 静默扫描<br/>历史 30 天数据</div>
+      </div>
+      <div class="lane-content empty">— 静默阶段，Forge 后台扫描你历史 30 天数据，准备反问与建议 —</div>
+
+      <div class="lane-label">
+        <div class="lane-badge sys"><span class="lane-icon" style="background:var(--ok)">S</span> 系统</div>
+        <div class="lane-note">资源池<br/>建会话</div>
+      </div>
+      <div class="lane-content">
+        <div class="step sys">
+          <span class="step-num">A·s1</span>
+          <h4>分配会话 ID</h4>
+          <div class="desc">#2308 · 创建工作台上下文，挂积分钱包（4,820）</div>
+        </div>
+        <div class="arrow dashed"></div>
+        <div class="step sys">
+          <span class="step-num">A·s2</span>
+          <h4>资产候选池就位</h4>
+          <div class="desc">分身 9 个 · 模板 6 个 · 品牌简报 3 份 · 历史 Playable 20 个</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE B -->
+  <div class="phase">
+    <div class="phase-h">
+      <div class="phase-num" style="background:linear-gradient(135deg,#ff9d6b,#ff7a3d)">B</div>
+      <div>
+        <div class="phase-tag">PHASE B · 共创 · 占 70% 时间</div>
+        <h2 class="phase-title">和 Forge <em>来回打磨</em></h2>
+        <div class="phase-sub">简报澄清 ↔ v1 生成 → 变体提案 ↔ 迭代对话 · 这是工作台的主战场</div>
+      </div>
+      <div class="phase-meta">用时 <b>5 ~ 20 分钟</b><br/>消耗 38 积分/回合</div>
+    </div>
+
+    <div class="lanes">
+      <div class="lane-label">
+        <div class="lane-badge kol"><span class="lane-icon" style="background:var(--warm)">A</span> KOL</div>
+        <div class="lane-note">回应反问<br/>挑变体 · 改风格</div>
+      </div>
+      <div class="lane-content">
+        <div class="step kol">
+          <span class="step-num">B1</span>
+          <h4>回答简报反问</h4>
+          <div class="desc">"60 秒短局，重点是分享率。"</div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step decision">
+          <span class="step-num">B·d1</span>
+          <h4>挑哪个变体</h4>
+          <div class="branches">
+            <span><b>A</b> 推荐版 · 继续打磨</span>
+            <span><b>B</b> A/B 跑双版本</span>
+            <span><b>C</b> 新建变体</span>
+          </div>
+        </div>
+        <div class="arrow loop"></div>
+        <div class="step kol">
+          <span class="step-num">B4</span>
+          <h4>用对话迭代</h4>
+          <div class="desc">"奖励池更刺激"<br/>"换分身配音"<br/>"把品牌色换成 Bybit 黄"</div>
+          <div class="tags"><span class="tag-mini">每轮 38 积分</span></div>
+        </div>
+        <div class="arrow loop"></div>
+        <div class="step kol">
+          <span class="step-num">B5</span>
+          <h4>定稿</h4>
+          <div class="desc">满意后 → 进入 Phase C</div>
+        </div>
+      </div>
+
+      <div class="lane-label">
+        <div class="lane-badge forge"><span class="lane-icon" style="background:var(--brand)">F</span> Forge</div>
+        <div class="lane-note">反问 · 生成<br/>提变体 · 体检</div>
+      </div>
+      <div class="lane-content">
+        <div class="step forge">
+          <span class="step-num">B·f1</span>
+          <h4>简报反问 3 条</h4>
+          <div class="desc">时长？目标？受众？匹配历史最高互动结构</div>
+          <div class="tags"><span class="tag-mini">·1s·</span></div>
+        </div>
+        <div class="arrow thick"></div>
+        <div class="step forge">
+          <span class="step-num">B·f2</span>
+          <h4>生成 v1</h4>
+          <div class="desc">读历史数据 + 结构匹配 + 渲染预览。intro · playing · reward 三段。</div>
+          <div class="tags"><span class="tag-mini">·5-12s·</span></div>
+        </div>
+        <div class="arrow thick"></div>
+        <div class="step forge">
+          <span class="step-num">B·f3</span>
+          <h4>提 3-4 个变体</h4>
+          <div class="desc">A 连胜锁定 · B 双倍池 · C 分身解说 · D 7 日大赛</div>
+        </div>
+        <div class="arrow loop"></div>
+        <div class="step forge">
+          <span class="step-num">B·f4</span>
+          <h4>响应每轮调整</h4>
+          <div class="desc">改文案/视觉/节奏，同步刷新 预估完成率、分享率、每局成本</div>
+        </div>
+      </div>
+
+      <div class="lane-label">
+        <div class="lane-badge sys"><span class="lane-icon" style="background:var(--ok)">S</span> 系统</div>
+        <div class="lane-note">实时预览<br/>数据回路</div>
+      </div>
+      <div class="lane-content">
+        <div class="step sys flex">
+          <span class="step-num">B·s1</span>
+          <h4>中栏手机预览 · 自动循环</h4>
+          <div class="desc">每改一次 → 重新渲染 3 段循环 + 刷新预估三指标</div>
+          <div class="tags"><span class="tag-mini">完成率</span><span class="tag-mini">分享率</span><span class="tag-mini">每局成本</span></div>
+        </div>
+        <div class="arrow dashed"></div>
+        <div class="step sys flex">
+          <span class="step-num">B·s2</span>
+          <h4>右栏变体看板</h4>
+          <div class="desc">v1 · v1.a · v1.b · v1.c 并排。可一键复制 / 预览 / 删除。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE C -->
+  <div class="phase">
+    <div class="phase-h">
+      <div class="phase-num" style="background:linear-gradient(135deg,#7ad9a8,#2eaa70)">C</div>
+      <div>
+        <div class="phase-tag">PHASE C · 收束</div>
+        <h2 class="phase-title">从 <em>定稿</em> 走向 <span class="warm">发布</span></h2>
+        <div class="phase-sub">资产挂载 → Forge 深度体检 → 发布到 8 平台 / Agent 世界 / 导出工程</div>
+      </div>
+      <div class="phase-meta">用时 <b>~3 分钟</b><br/>消耗 80 积分（体检）</div>
+    </div>
+
+    <div class="lanes">
+      <div class="lane-label">
+        <div class="lane-badge kol"><span class="lane-icon" style="background:var(--warm)">A</span> KOL</div>
+        <div class="lane-note">挂资产<br/>选发布通道</div>
+      </div>
+      <div class="lane-content">
+        <div class="step kol">
+          <span class="step-num">C1</span>
+          <h4>挂上正式资产</h4>
+          <div class="desc">品牌 logo / 奖池预算 / 合约 · 分身语音 · 平台横竖屏适配</div>
+          <div class="tags"><span class="tag-mini">品牌</span><span class="tag-mini">分身</span><span class="tag-mini">分发</span></div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step decision">
+          <span class="step-num">C·d1</span>
+          <h4>发布去哪里</h4>
+          <div class="branches">
+            <span><b>1</b> 8 平台一键分发</span>
+            <span><b>2</b> Agent 世界 9 个节点</span>
+            <span><b>3</b> 导出工程交付品牌方</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane-label">
+        <div class="lane-badge forge"><span class="lane-icon" style="background:var(--brand)">F</span> Forge</div>
+        <div class="lane-note">深度体检<br/>合规校验</div>
+      </div>
+      <div class="lane-content">
+        <div class="step forge">
+          <span class="step-num">C·f1</span>
+          <h4>跑 1,000 次模拟玩家</h4>
+          <div class="desc">分布在不同地区 / 语言 / 设备，回收真实分布的完成率与分享率</div>
+          <div class="tags"><span class="tag-mini">·30s·</span></div>
+        </div>
+        <div class="arrow thick"></div>
+        <div class="step forge">
+          <span class="step-num">C·f2</span>
+          <h4>风险词 + 平台合规</h4>
+          <div class="desc">扫所有文案/视觉，标黄危险词，告诉你 TikTok / IG 哪些点需要改</div>
+        </div>
+        <div class="arrow thick"></div>
+        <div class="step forge">
+          <span class="step-num">C·f3</span>
+          <h4>健康度报告</h4>
+          <div class="desc">完成率 62% · 分享率 18% · 风险 0 · 合规 100% → 绿灯放行</div>
+        </div>
+      </div>
+
+      <div class="lane-label">
+        <div class="lane-badge sys"><span class="lane-icon" style="background:var(--ok)">S</span> 系统</div>
+        <div class="lane-note">分发 · 部署<br/>三选其一</div>
+      </div>
+      <div class="lane-content">
+        <div class="step sys">
+          <span class="step-num">C·s1</span>
+          <h4>8 平台分发</h4>
+          <div class="desc">TikTok · IG · YouTube · X · Snap · 抖音 · 视频号 · 小红书</div>
+        </div>
+        <div class="arrow dashed"></div>
+        <div class="step sys">
+          <span class="step-num">C·s2</span>
+          <h4>9 个 Agent 节点</h4>
+          <div class="desc">语言/时区自动适配，Jakarta · Manila · Lagos · São Paulo …</div>
+        </div>
+        <div class="arrow dashed"></div>
+        <div class="step sys">
+          <span class="step-num">C·s3</span>
+          <h4>导出工程包</h4>
+          <div class="desc">.zip + 简报 PDF + 合约 → 交付品牌方</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE D -->
+  <div class="phase">
+    <div class="phase-h">
+      <div class="phase-num" style="background:linear-gradient(135deg,#5b4dff,#3c2fd0)">D</div>
+      <div>
+        <div class="phase-tag">PHASE D · 自进化 · 闭环</div>
+        <h2 class="phase-title">让 <em>数据</em> 回流，<span class="warm">Forge</span> 自己变强</h2>
+        <div class="phase-sub">实时回流 → 自动学习 → 提 A/B → 回到 Phase B 或抽成模板</div>
+      </div>
+      <div class="phase-meta">用时 <b>24 / 168 小时</b><br/>不消耗积分</div>
+    </div>
+
+    <div class="lanes">
+      <div class="lane-label">
+        <div class="lane-badge kol"><span class="lane-icon" style="background:var(--warm)">A</span> KOL</div>
+        <div class="lane-note">接收建议<br/>抽模板 / 收尾</div>
+      </div>
+      <div class="lane-content">
+        <div class="step kol">
+          <span class="step-num">D1</span>
+          <h4>看信息中心提示</h4>
+          <div class="desc">"+18% CTR" · "Jakarta 节点 9,820 局" · "Bybit 想加大预算"</div>
+          <div class="tags"><span class="tag-mini">通知</span></div>
+        </div>
+        <div class="arrow"></div>
+        <div class="step decision">
+          <span class="step-num">D·d1</span>
+          <h4>是否继续</h4>
+          <div class="branches">
+            <span><b>是</b> 回 Phase B 跑 v2</span>
+            <span><b>抽</b> 沉淀为模板</span>
+            <span><b>停</b> 收尾归档</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lane-label">
+        <div class="lane-badge forge"><span class="lane-icon" style="background:var(--brand)">F</span> Forge</div>
+        <div class="lane-note">学习成熟度 ↑<br/>自动提 A/B</div>
+      </div>
+      <div class="lane-content">
+        <div class="step forge">
+          <span class="step-num">D·f1</span>
+          <h4>自动学习新数据</h4>
+          <div class="desc">学习成熟度 34% → 持续上升 · 沉淀新组合 · 标注新模板候选</div>
+        </div>
+        <div class="arrow thick"></div>
+        <div class="step forge">
+          <span class="step-num">D·f2</span>
+          <h4>主动提 A/B 建议</h4>
+          <div class="desc">"双倍奖励池 +18% CTR" "印尼语带局 14 天上榜，建议同款挂到 Manila"</div>
+        </div>
+      </div>
+
+      <div class="lane-label">
+        <div class="lane-badge sys"><span class="lane-icon" style="background:var(--ok)">S</span> 系统</div>
+        <div class="lane-note">指标回流<br/>结算 · 战报</div>
+      </div>
+      <div class="lane-content">
+        <div class="step sys">
+          <span class="step-num">D·s1</span>
+          <h4>多源回流</h4>
+          <div class="desc">完成局数 · 分享 · 收益（钱包） · 节点战报（Agent 世界） · 品牌反馈</div>
+        </div>
+        <div class="arrow dashed"></div>
+        <div class="step sys">
+          <span class="step-num">D·s2</span>
+          <h4>结算入账</h4>
+          <div class="desc">USDC 主钱包自动到账 · 推送通知给你</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OBJECTS + STATE MACHINE -->
+  <div class="panel-2col">
+    <div class="obj-card">
+      <h3>6 个关键对象</h3>
+      <div class="sub">流程中流转的核心数据结构。每一个都能被复用、保存、改写。</div>
+      <div class="obj-grid">
+        <div class="obj">
+          <span class="obj-tag t-brand">BRIEF</span>
+          <h4>意图简报</h4>
+          <div class="obj-desc">你的一句话 + Forge 补全字段。每个会话只有一个。</div>
+          <div class="obj-fields"><span>目标</span><span>受众</span><span>节奏</span><span>风格</span></div>
+        </div>
+        <div class="obj">
+          <span class="obj-tag t-warm">PLAYABLE</span>
+          <h4>Playable 主件</h4>
+          <div class="obj-desc">最终发布物。3 段结构：开场 / 玩法 / 奖励。</div>
+          <div class="obj-fields"><span>intro</span><span>playing</span><span>reward</span><span>奖池</span></div>
+        </div>
+        <div class="obj">
+          <span class="obj-tag t-ink">VARIANT</span>
+          <h4>变体 v1 / v2 / v.a</h4>
+          <div class="obj-desc">主件的可替换分支。可并排 A/B。</div>
+          <div class="obj-fields"><span>当前</span><span>A/B 中</span><span>草稿</span></div>
+        </div>
+        <div class="obj">
+          <span class="obj-tag t-brand">CLONE</span>
+          <h4>分身</h4>
+          <div class="obj-desc">挂上即可担任开场、解说、互动 NPC。</div>
+          <div class="obj-fields"><span>语气</span><span>形象</span><span>台本</span></div>
+        </div>
+        <div class="obj">
+          <span class="obj-tag t-warm">TEMPLATE</span>
+          <h4>模板</h4>
+          <div class="obj-desc">把跑通的局抽空槽位，下次填空开局。</div>
+          <div class="obj-fields"><span>{标的}</span><span>{奖池}</span><span>{主题}</span></div>
+        </div>
+        <div class="obj">
+          <span class="obj-tag t-ok">METRICS</span>
+          <h4>实时指标</h4>
+          <div class="obj-desc">从 Agent 世界回流，喂回 Forge 学习。</div>
+          <div class="obj-fields"><span>完成率</span><span>分享率</span><span>CPM</span><span>风险</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sm-card">
+      <h3>会话状态机</h3>
+      <div class="sub">一个工作台会话从开到关，只走这 6 个状态。</div>
+
+      <div class="sm-row">
+        <span class="sm-node idle">IDLE</span>
+        <span class="sm-arr">⟶ 提交意图</span>
+        <span class="sm-node brief">BRIEF</span>
+      </div>
+      <div class="sm-row">
+        <span class="sm-node brief">BRIEF</span>
+        <span class="sm-arr">⟶ Forge 反问 + 回答</span>
+        <span class="sm-node creating">CREATING</span>
+      </div>
+      <div class="sm-row">
+        <span class="sm-node creating">CREATING</span>
+        <span class="sm-arr">⟶ 对话迭代（可循环）</span>
+        <span class="sm-node creating">CREATING</span>
+      </div>
+      <div class="sm-row">
+        <span class="sm-node creating">CREATING</span>
+        <span class="sm-arr">⟶ 定稿 · 体检</span>
+        <span class="sm-node review">REVIEW</span>
+      </div>
+      <div class="sm-row">
+        <span class="sm-node review">REVIEW</span>
+        <span class="sm-arr">⟶ 健康度绿灯 · 发布</span>
+        <span class="sm-node live">LIVE</span>
+      </div>
+      <div class="sm-row">
+        <span class="sm-node live">LIVE</span>
+        <span class="sm-arr">⟶ 24h 后数据回流</span>
+        <span class="sm-node evolve">EVOLVING</span>
+      </div>
+      <div class="sm-row">
+        <span class="sm-node evolve">EVOLVING</span>
+        <span class="sm-arr">⟶ 接受 A/B 建议</span>
+        <span class="sm-node creating">CREATING</span>
+        <span class="sm-arr" style="color:var(--warm);font-weight:700">↺ 闭环</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTNOTES -->
+  <div class="foot">
+    <div class="foot-item">
+      <div class="num">3</div>
+      <h4>三栏布局</h4>
+      <p>左 · Forge 对话 / 中 · 实时手机预览 / 右 · 变体看板。三栏同时联动，任何一处改动都会被另两栏看到。</p>
+    </div>
+    <div class="foot-item">
+      <div class="num">5</div>
+      <h4>五个决策点</h4>
+      <p>B·d1 选变体 · C·d1 选发布通道 · D·d1 是否继续 · A·入口选择 · B 迭代是否停。其余都是 Forge 自动跑。</p>
+    </div>
+    <div class="foot-item">
+      <div class="num">∞</div>
+      <h4>一个闭环</h4>
+      <p>Phase D → Phase B 的回流，是工作台和单纯"AI 生成器"最本质的区别。每一次发布都让 Forge 更懂你和你的受众。</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

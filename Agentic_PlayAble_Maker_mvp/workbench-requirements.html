@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>Agentic 工作台 · 需求文档</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  body { background: var(--bg); padding: 32px 40px 80px; }
+  .doc { max-width: 1280px; margin: 0 auto; }
+
+  /* ── doc header ── */
+  .doc-h {
+    display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px;
+    padding: 32px 36px;
+    background:
+      radial-gradient(800px 360px at 100% 0%, rgba(91,77,255,.12), transparent 60%),
+      radial-gradient(500px 280px at 0% 100%, rgba(255,122,61,.08), transparent 60%),
+      var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    box-shadow: var(--sh-md);
+    margin-bottom: 36px;
+  }
+  .doc-h .doctag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px;
+    background: var(--ink-1); color: white;
+    border-radius: 99px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
+    margin-bottom: 16px;
+  }
+  .doc-h .doctag::before { content: "▣"; color: var(--brand); }
+  .doc-h h1 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 42px; line-height: 1.04;
+    letter-spacing: -.02em; margin: 0 0 14px;
+  }
+  .doc-h h1 em { font-style: normal; color: var(--brand); }
+  .doc-h h1 .warm { color: var(--warm); }
+  .doc-h .lede {
+    font-size: 14px; line-height: 1.7; color: var(--ink-2);
+    margin: 0 0 18px; max-width: 580px;
+  }
+  .doc-h .meta {
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; color: var(--ink-3);
+    border-top: 1px dashed var(--border-2);
+    padding-top: 14px;
+  }
+  .doc-h .meta b { color: var(--ink-1); font-weight: 700; font-family: "Manrope", sans-serif; }
+
+  .doc-h-side {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .side-card {
+    padding: 14px 16px;
+    background: var(--bg-1, #fafaff);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .side-card .k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: .1em;
+    color: var(--ink-3); font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .side-card .v {
+    font-family: "Manrope", sans-serif;
+    font-weight: 700; font-size: 14px; color: var(--ink-1);
+    line-height: 1.35;
+  }
+  .side-card.brand { background: var(--brand-soft); border-color: var(--brand-line); }
+  .side-card.brand .v { color: var(--brand); }
+  .side-card.warm { background: var(--warm-soft); border-color: var(--warm-line); }
+  .side-card.warm .v { color: var(--warm); }
+
+  /* ── TOC ── */
+  .toc {
+    padding: 18px 24px; margin-bottom: 28px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px;
+    display: grid; grid-template-columns: 130px 1fr; gap: 18px; align-items: center;
+  }
+  .toc-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; letter-spacing: .15em;
+    color: var(--ink-3); font-weight: 700;
+  }
+  .toc-list { display: flex; flex-wrap: wrap; gap: 5px 4px; }
+  .toc-list a {
+    text-decoration: none;
+    padding: 5px 11px;
+    border-radius: 99px;
+    background: var(--bg-2);
+    color: var(--ink-2);
+    font-size: 11.5px; font-weight: 600;
+    border: 1px solid transparent;
+    transition: all .15s;
+  }
+  .toc-list a:hover {
+    background: var(--brand-soft); color: var(--brand);
+    border-color: var(--brand-line);
+  }
+  .toc-list a .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; color: var(--ink-4);
+    margin-right: 6px;
+  }
+
+  /* ── section ── */
+  .sec {
+    margin-bottom: 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--sh-sm);
+  }
+  .sec-h {
+    padding: 22px 28px 18px;
+    display: grid; grid-template-columns: 48px 1fr auto; gap: 18px; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .sec-num {
+    font-family: "Instrument Serif", serif;
+    font-size: 36px; color: var(--brand);
+    line-height: 1; text-align: center;
+    font-style: italic;
+  }
+  .sec-h h2 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 22px;
+    margin: 0; letter-spacing: -.015em;
+    line-height: 1.15;
+  }
+  .sec-h h2 em { font-style: normal; color: var(--brand); }
+  .sec-h .deck {
+    font-size: 12.5px; color: var(--ink-3);
+    margin-top: 4px;
+  }
+  .sec-h .right {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; color: var(--ink-3);
+    letter-spacing: .04em;
+    text-align: right;
+  }
+  .sec-h .right b { color: var(--ink-1); font-family: "Manrope", sans-serif; font-size: 13px; }
+  .sec-body { padding: 24px 28px 28px; }
+
+  /* ── 定位 grid ── */
+  .pos-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .pos-cell {
+    padding: 16px 18px;
+    background: var(--bg-1, #fafaff);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .pos-cell .k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: .1em; color: var(--ink-3);
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .pos-cell .v {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 17px; line-height: 1.25;
+    letter-spacing: -.005em; color: var(--ink-1);
+  }
+  .pos-cell .v em { font-style: normal; color: var(--brand); }
+  .pos-cell .v .warm { color: var(--warm); }
+  .pos-cell .sub {
+    font-size: 11.5px; color: var(--ink-3);
+    margin-top: 6px; line-height: 1.5;
+  }
+
+  /* ── user stories ── */
+  .story {
+    display: grid; grid-template-columns: 100px 1fr 1fr;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px dashed var(--border-2);
+  }
+  .story:last-child { border-bottom: none; }
+  .story-id {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; color: var(--ink-3);
+    font-weight: 700; letter-spacing: .04em;
+  }
+  .story-id .role {
+    display: block; margin-top: 6px;
+    padding: 2px 8px; border-radius: 6px;
+    background: var(--bg-2); color: var(--ink-2);
+    font-size: 10px; text-align: center;
+  }
+  .story-id .role.kol { background: var(--warm-soft); color: var(--warm); }
+  .story-id .role.brand { background: #fcd1e1; color: #b03a72; }
+  .story-id .role.ops { background: var(--brand-soft); color: var(--brand); }
+
+  .story-text {
+    font-size: 13.5px; line-height: 1.55; color: var(--ink-1);
+  }
+  .story-text b { color: var(--brand); font-weight: 700; }
+  .story-text em { font-style: normal; color: var(--warm); font-weight: 600; }
+
+  .story-meta {
+    display: flex; flex-direction: column; gap: 5px;
+    font-size: 11px;
+  }
+  .story-meta .m-row {
+    display: flex; gap: 8px; align-items: baseline;
+  }
+  .story-meta .m-k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; color: var(--ink-3);
+    letter-spacing: .06em; font-weight: 700;
+    min-width: 38px;
+  }
+  .story-meta .m-v { color: var(--ink-2); line-height: 1.4; }
+  .story-meta .m-v b { color: var(--ink-1); font-weight: 700; }
+
+  /* ── functional req ── */
+  .fr {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .fr-h {
+    padding: 14px 20px;
+    background: var(--bg-1, #fafaff);
+    border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center;
+  }
+  .fr-num {
+    width: 34px; height: 34px; border-radius: 10px;
+    background: var(--ink-1); color: white;
+    display: grid; place-items: center;
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700; font-size: 11px;
+    letter-spacing: .04em;
+  }
+  .fr-h h3 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 16.5px;
+    margin: 0 0 2px; letter-spacing: -.005em;
+  }
+  .fr-h .deck { font-size: 12px; color: var(--ink-3); }
+  .fr-h .pri {
+    padding: 3px 9px; border-radius: 99px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  }
+  .pri.p0 { background: #fde4e4; color: var(--bad); }
+  .pri.p1 { background: var(--warm-soft); color: var(--warm); }
+  .pri.p2 { background: var(--brand-soft); color: var(--brand); }
+  .pri.p3 { background: var(--bg-2); color: var(--ink-3); }
+
+  .fr-body {
+    padding: 18px 20px;
+    display: grid; grid-template-columns: 1.6fr 1fr;
+    gap: 22px;
+  }
+  .req-list {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .req-list .ri {
+    display: grid; grid-template-columns: 18px 1fr;
+    gap: 8px; padding: 6px 0;
+    font-size: 12.5px; line-height: 1.55;
+    color: var(--ink-2);
+  }
+  .req-list .ri::before {
+    content: ""; width: 6px; height: 6px;
+    margin-top: 8px;
+    border-radius: 99px;
+    background: var(--ink-1);
+    grid-column: 1;
+  }
+  .req-list .ri.must::before { background: var(--bad); }
+  .req-list .ri.should::before { background: var(--warm); }
+  .req-list .ri.could::before { background: var(--ink-4); }
+  .req-list .ri b { color: var(--ink-1); }
+  .req-list .ri code {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    background: var(--bg-2);
+    color: var(--ink-1);
+    padding: 1px 6px; border-radius: 5px;
+  }
+
+  .ac {
+    padding: 14px 16px;
+    background: var(--bg-1, #fafaff);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    align-self: start;
+  }
+  .ac h5 {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: .1em;
+    color: var(--ink-3); font-weight: 700;
+    margin: 0 0 10px;
+  }
+  .ac-row {
+    display: flex; align-items: flex-start; gap: 7px;
+    padding: 5px 0;
+    font-size: 11.5px; line-height: 1.5;
+    color: var(--ink-2);
+  }
+  .ac-row::before {
+    content: "✓"; color: var(--ok);
+    font-weight: 700; font-size: 13px;
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+  .ac-row.x::before { content: "✕"; color: var(--bad); }
+  .ac-row b { color: var(--ink-1); font-weight: 700; }
+
+  /* ── data model ── */
+  .schema {
+    background: var(--bg-1, #fafaff);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .schema-h {
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .schema-h .obj-tag {
+    padding: 2px 7px; border-radius: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; font-weight: 700;
+    color: white;
+    letter-spacing: .04em;
+  }
+  .schema-h h4 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 700; font-size: 14px; margin: 0;
+  }
+  .schema-h .desc {
+    font-size: 11px; color: var(--ink-3);
+    margin-left: auto;
+  }
+  .schema-body {
+    padding: 4px 0;
+  }
+  .schema-row {
+    display: grid; grid-template-columns: 1fr 80px 1.4fr;
+    padding: 7px 16px;
+    font-size: 11.5px; line-height: 1.4;
+    align-items: center;
+  }
+  .schema-row + .schema-row { border-top: 1px dashed var(--border-2); }
+  .schema-row .field {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600; color: var(--ink-1);
+    font-size: 11.5px;
+  }
+  .schema-row .type {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; color: var(--brand);
+    text-align: left;
+    background: var(--brand-soft);
+    padding: 1px 7px; border-radius: 5px;
+    display: inline-block;
+    width: fit-content;
+  }
+  .schema-row .note {
+    color: var(--ink-3);
+    font-size: 11px;
+  }
+  .schema-row .note b { color: var(--ink-2); font-weight: 600; }
+
+  .schema-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  /* ── integrations ── */
+  .int-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .int {
+    padding: 14px 16px;
+    background: var(--bg-1, #fafaff);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+    position: relative;
+  }
+  .int .arrow-tag {
+    align-self: flex-start;
+    padding: 2px 8px; border-radius: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: .04em;
+  }
+  .int.in .arrow-tag { background: var(--brand-soft); color: var(--brand); }
+  .int.out .arrow-tag { background: var(--warm-soft); color: var(--warm); }
+  .int.bi .arrow-tag { background: var(--ok-soft); color: var(--ok); }
+  .int h4 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 700; font-size: 13.5px; margin: 0;
+    letter-spacing: -.005em;
+  }
+  .int .desc { font-size: 11.5px; color: var(--ink-3); line-height: 1.5; }
+  .int .who { font-family: "IBM Plex Mono", monospace; font-size: 10px; color: var(--ink-4); margin-top: 4px; }
+
+  /* ── nfr table ── */
+  .nfr {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  .nfr th, .nfr td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .nfr th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: .08em;
+    color: var(--ink-3); font-weight: 700;
+    background: var(--bg-1, #fafaff);
+  }
+  .nfr td.k {
+    font-weight: 700; color: var(--ink-1);
+    font-family: "Manrope", sans-serif;
+    width: 130px;
+  }
+  .nfr td.t {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11.5px; color: var(--brand);
+    width: 220px;
+    font-weight: 600;
+  }
+  .nfr td.d { color: var(--ink-2); line-height: 1.55; }
+
+  /* ── metrics ── */
+  .metrics-grid {
+    display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr;
+    gap: 14px;
+  }
+  .met {
+    padding: 18px 18px 16px;
+    border-radius: 16px;
+    background: var(--bg-1, #fafaff);
+    border: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .met.north {
+    background: linear-gradient(135deg, #18172a 0%, #3c2fd0 130%);
+    color: white;
+    border-color: transparent;
+  }
+  .met .label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: .1em;
+    color: var(--ink-3); font-weight: 700;
+  }
+  .met.north .label { color: rgba(255,255,255,.55); }
+  .met .name {
+    font-family: "Manrope", sans-serif;
+    font-weight: 700; font-size: 15px;
+    letter-spacing: -.005em;
+  }
+  .met .target {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 26px;
+    line-height: 1; margin-top: 4px;
+    color: var(--brand);
+  }
+  .met.north .target {
+    font-size: 36px; color: var(--warm);
+  }
+  .met .desc {
+    font-size: 11px; color: var(--ink-3);
+    line-height: 1.5; margin-top: 4px;
+  }
+  .met.north .desc { color: rgba(255,255,255,.6); }
+
+  /* ── out of scope ── */
+  .scope {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .scope-col h4 {
+    font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 14px;
+    margin: 0 0 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .scope-col h4 .dot {
+    width: 8px; height: 8px; border-radius: 99px;
+  }
+  .scope-col.in h4 .dot { background: var(--ok); }
+  .scope-col.out h4 .dot { background: var(--ink-4); }
+  .scope-list {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .scope-item {
+    padding: 9px 13px;
+    border-radius: 10px;
+    font-size: 12px; line-height: 1.4;
+    color: var(--ink-2);
+    border: 1px solid var(--border);
+  }
+  .scope.in .scope-item { background: var(--ok-soft); border-color: rgba(46,170,112,.25); color: #1f6e4a; }
+  .scope.out .scope-item { background: var(--bg-1, #fafaff); border-color: var(--border); color: var(--ink-3); text-decoration: line-through; text-decoration-color: var(--ink-4); }
+  .scope-item b { color: inherit; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="doc">
+
+  <!-- HEADER -->
+  <div class="doc-h">
+    <div>
+      <div class="doctag">PRD · WORKBENCH · v1.0</div>
+      <h1>Agentic 工作台<br/>需求文档</h1>
+      <p class="lede">
+        Agentic 工作台是 AirvanaMaker 里 KOL 与 <b style="color:var(--brand)">Forge Agent</b> 共创 Playable 的主战场。
+        本文档锁定 v1.0 的范围、功能模块、数据模型、集成边界与验收口径，配合
+        <a href="workbench-flow.html" style="color:var(--warm);text-decoration:none;border-bottom:1.5px dashed var(--warm-line)">流程蓝图</a>
+        使用。
+      </p>
+      <div class="meta">
+        <span>负责人 <b>Aria · PM</b></span>
+        <span>状态 <b style="color:var(--brand)">Draft v1.0</b></span>
+        <span>更新 <b>2026-05-28</b></span>
+        <span>预期上线 <b>2026 Q3</b></span>
+      </div>
+    </div>
+    <div class="doc-h-side">
+      <div class="side-card brand">
+        <div class="k">NORTH STAR</div>
+        <div class="v">让 KOL 用 5 分钟做出一个能跑通分发与结算的 Playable</div>
+      </div>
+      <div class="side-card warm">
+        <div class="k">UNIQUENESS</div>
+        <div class="v">三栏共创 + 自进化闭环，区别于纯 AI 生成器</div>
+      </div>
+      <div class="side-card">
+        <div class="k">SCOPE</div>
+        <div class="v" style="font-size:13px">3 栏工作区 · 7 个功能模块 · 6 个数据对象 · 11 个外部集成</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <span class="toc-label">CONTENTS</span>
+    <div class="toc-list">
+      <a href="#sec1"><span class="n">01</span>模块定位</a>
+      <a href="#sec2"><span class="n">02</span>用户故事</a>
+      <a href="#sec3"><span class="n">03</span>功能需求</a>
+      <a href="#sec4"><span class="n">04</span>数据模型</a>
+      <a href="#sec5"><span class="n">05</span>集成边界</a>
+      <a href="#sec6"><span class="n">06</span>非功能需求</a>
+      <a href="#sec7"><span class="n">07</span>度量指标</a>
+      <a href="#sec8"><span class="n">08</span>范围 & 不做</a>
+    </div>
+  </div>
+
+  <!-- 01 MODULE POSITION -->
+  <div class="sec" id="sec1">
+    <div class="sec-h">
+      <div class="sec-num">01</div>
+      <div>
+        <h2>模块<em>定位</em> · 一句话解释这是什么</h2>
+        <div class="deck">用三个维度回答"是什么 / 解决什么 / 给谁用"</div>
+      </div>
+      <div class="right">优先级 <b>P0</b><br/>核心入口</div>
+    </div>
+    <div class="sec-body">
+      <div class="pos-grid">
+        <div class="pos-cell">
+          <div class="k">IS</div>
+          <div class="v">KOL 与 <em>Forge Agent</em> 来回对话、共同打磨一段 Playable 的<em>主工作区</em></div>
+          <div class="sub">三栏布局：左对话、中预览、右变体。三栏强联动。</div>
+        </div>
+        <div class="pos-cell">
+          <div class="k">SOLVES</div>
+          <div class="v">把从 0 到能发布的时间从<span class="warm">几天</span>压缩到 <span class="warm">5 分钟</span></div>
+          <div class="sub">取代手动文档、原型工具、A/B 跑量、合规审核四段断裂的流程。</div>
+        </div>
+        <div class="pos-cell">
+          <div class="k">FOR</div>
+          <div class="v">已经在 8 平台运营的<em>中重度 KOL</em>（粉丝 ≥ 50万）</div>
+          <div class="sub">他们想接品牌单又怕重复内容耗品牌资产。Forge 帮他们「换皮不换核」。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 USER STORIES -->
+  <div class="sec" id="sec2">
+    <div class="sec-h">
+      <div class="sec-num">02</div>
+      <div>
+        <h2>用户<em>故事</em></h2>
+        <div class="deck">三类角色 · 七个高价值场景</div>
+      </div>
+      <div class="right">覆盖率 <b>90%</b><br/>核心用例 7 / 8</div>
+    </div>
+    <div class="sec-body">
+
+      <div class="story">
+        <div class="story-id">US-01<span class="role kol">KOL</span></div>
+        <div class="story-text">
+          作为 KOL，我希望<b>用一句话告诉 Forge 我今天想做什么</b>，
+          它就能 <em>5-12 秒</em>出一个能在手机上试玩的首版，
+          这样我不用再手动写脚本和拼素材。
+        </div>
+        <div class="story-meta">
+          <div class="m-row"><span class="m-k">触发</span><span class="m-v">点击「新建 Agentic Playable」</span></div>
+          <div class="m-row"><span class="m-k">价值</span><span class="m-v">从 idea 到原型 <b>≤ 5 分钟</b></span></div>
+          <div class="m-row"><span class="m-k">频次</span><span class="m-v">每周 3-5 次</span></div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-id">US-02<span class="role kol">KOL</span></div>
+        <div class="story-text">
+          作为 KOL，我希望能 <b>同时对比 3-4 个变体</b>，
+          看到 Forge 给的 <em>预估完成率/分享率/CPM</em>，
+          这样我能基于数据而不是直觉选发布版本。
+        </div>
+        <div class="story-meta">
+          <div class="m-row"><span class="m-k">触发</span><span class="m-v">v1 生成完成后</span></div>
+          <div class="m-row"><span class="m-k">价值</span><span class="m-v">选错变体的成本从 <b>$200</b> 降到 <b>$0</b></span></div>
+          <div class="m-row"><span class="m-k">频次</span><span class="m-v">每个 Playable 1 次</span></div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-id">US-03<span class="role kol">KOL</span></div>
+        <div class="story-text">
+          作为 KOL，我希望 <b>用对话改变体</b>（"奖励池更刺激""换分身配音"），
+          预览栏立刻刷新，
+          这样我能<em>看着结果说话</em>，不用学专业工具。
+        </div>
+        <div class="story-meta">
+          <div class="m-row"><span class="m-k">触发</span><span class="m-v">迭代对话循环</span></div>
+          <div class="m-row"><span class="m-k">价值</span><span class="m-v">学习成本 <b>= 0</b></span></div>
+          <div class="m-row"><span class="m-k">频次</span><span class="m-v">每会话 5-10 轮</span></div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-id">US-04<span class="role kol">KOL</span></div>
+        <div class="story-text">
+          作为 KOL，我希望能 <b>把跑通的局存为模板</b>，
+          下次换品牌/标的/奖池只填几个槽位就能开新局，
+          这样我能把作品<em>资产化</em>。
+        </div>
+        <div class="story-meta">
+          <div class="m-row"><span class="m-k">触发</span><span class="m-v">Phase D 自进化阶段</span></div>
+          <div class="m-row"><span class="m-k">价值</span><span class="m-v">复用一次省 <b>~30 分钟</b></span></div>
+          <div class="m-row"><span class="m-k">频次</span><span class="m-v">每月 1-2 次抽取</span></div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-id">US-05<span class="role brand">品牌</span></div>
+        <div class="story-text">
+          作为品牌方，我希望<b>在 KOL 工作台里直接看到我的简报被怎么用</b>，
+          能<em>留言提建议</em>而不是走第三方协作工具，
+          这样合作链路最短。
+        </div>
+        <div class="story-meta">
+          <div class="m-row"><span class="m-k">触发</span><span class="m-v">品牌简报响应 / 反馈</span></div>
+          <div class="m-row"><span class="m-k">价值</span><span class="m-v">沟通轮次 <b>↓ 60%</b></span></div>
+          <div class="m-row"><span class="m-k">频次</span><span class="m-v">每个 Playable 2-3 次</span></div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-id">US-06<span class="role ops">运营</span></div>
+        <div class="story-text">
+          作为平台运营，我希望<b>Forge 在发布前自动跑合规体检</b>，
+          标黄风险词、给出平台适配建议，
+          这样我们不需要为每个 KOL 做人工预审。
+        </div>
+        <div class="story-meta">
+          <div class="m-row"><span class="m-k">触发</span><span class="m-v">Phase C · Forge 体检</span></div>
+          <div class="m-row"><span class="m-k">价值</span><span class="m-v">审核人力 <b>↓ 80%</b></span></div>
+          <div class="m-row"><span class="m-k">频次</span><span class="m-v">每次发布前 1 次</span></div>
+        </div>
+      </div>
+
+      <div class="story">
+        <div class="story-id">US-07<span class="role kol">KOL</span></div>
+        <div class="story-text">
+          作为 KOL，我希望 Forge 能<b>主动告诉我什么时候该跑下一轮 A/B</b>，
+          基于真实数据而不是我盯榜单，
+          这样我能把<em>运营托管</em>给它。
+        </div>
+        <div class="story-meta">
+          <div class="m-row"><span class="m-k">触发</span><span class="m-v">Phase D · 自进化通知</span></div>
+          <div class="m-row"><span class="m-k">价值</span><span class="m-v">运营投入 <b>↓ 70%</b></span></div>
+          <div class="m-row"><span class="m-k">频次</span><span class="m-v">发布后 24/168 小时</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 FUNCTIONAL REQUIREMENTS -->
+  <div class="sec" id="sec3">
+    <div class="sec-h">
+      <div class="sec-num">03</div>
+      <div>
+        <h2>功能<em>需求</em> · 7 个模块</h2>
+        <div class="deck">MUST · SHOULD · COULD 三级优先级 · 每模块附验收</div>
+      </div>
+      <div class="right">P0 <b>4</b> · P1 <b>2</b> · P2 <b>1</b></div>
+    </div>
+    <div class="sec-body">
+
+      <!-- FR-01 -->
+      <div class="fr">
+        <div class="fr-h">
+          <div class="fr-num">F-01</div>
+          <div>
+            <h3>入口与意图捕获</h3>
+            <div class="deck">把 KOL 的一句话变成结构化的 Brief</div>
+          </div>
+          <span class="pri p0">P0 · MUST</span>
+        </div>
+        <div class="fr-body">
+          <div class="req-list">
+            <div class="ri must"><div><b>四类入口</b> 必须支持：首页"新建" / 模板中心"套用" / 信息中心通知跳转 / 品牌简报响应</div></div>
+            <div class="ri must"><div><b>意图大文本框</b> 必须支持自然语言输入，<code>⌘ + Enter</code> 提交，提交按钮在 prompt 为空时禁用</div></div>
+            <div class="ri must"><div><b>可选挂载</b>：资料上传 / 选分身 / 选模板。挂载越多，Forge 反问越少</div></div>
+            <div class="ri should"><div><b>会话上下文</b>：分配 Session ID，挂积分钱包，记录所有挂载资产</div></div>
+            <div class="ri could"><div><b>语音输入</b>：可用麦克风口述意图（v1.1 引入）</div></div>
+          </div>
+          <div class="ac">
+            <h5>验收 · ACCEPTANCE</h5>
+            <div class="ac-row">用户输入 5-200 字意图 + 任意挂载，<b>能进入 Phase B</b></div>
+            <div class="ac-row">所有 4 类入口均可跳进工作台，<b>带上下文参数</b></div>
+            <div class="ac-row">空意图时提交按钮置灰</div>
+            <div class="ac-row x">不允许在没有意图的情况下生成 v1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FR-02 -->
+      <div class="fr">
+        <div class="fr-h">
+          <div class="fr-num">F-02</div>
+          <div>
+            <h3>三栏工作区 · 共创界面</h3>
+            <div class="deck">左对话 / 中预览 / 右变体 · 三栏强联动</div>
+          </div>
+          <span class="pri p0">P0 · MUST</span>
+        </div>
+        <div class="fr-body">
+          <div class="req-list">
+            <div class="ri must"><div><b>左栏 · Forge 对话</b>：消息流（KOL 与 Forge 两类气泡）、输入框、积分消耗提示、分身/资料/模板挂件按钮</div></div>
+            <div class="ri must"><div><b>中栏 · 实时预览</b>：iPhone 设备框、3 段循环（intro / playing / reward）、底部三指标（完成率 / 分享率 / 每局成本）</div></div>
+            <div class="ri must"><div><b>右栏 · 变体看板</b>：v1 / v1.a / v1.b / v1.c 卡片，状态徽章（当前 / A/B 中 / 草稿）、复制 / 预览 / 删除</div></div>
+            <div class="ri must"><div><b>联动规则</b>：左栏发消息 → 中栏 5-12s 内刷新预览 → 右栏自动新建变体</div></div>
+            <div class="ri should"><div><b>设备切换</b>：预览支持 iPhone / Android / 横屏 / 竖屏</div></div>
+          </div>
+          <div class="ac">
+            <h5>验收 · ACCEPTANCE</h5>
+            <div class="ac-row">三栏在 1440 宽下完整可见，<b>无横向滚动</b></div>
+            <div class="ac-row">预览 3 段循环可自动播放，时长 2.4s + 3.8s + 2.4s</div>
+            <div class="ac-row">每次对话提交，预览刷新 ≤ <b>12 秒</b></div>
+            <div class="ac-row">变体看板最多并列 6 个，超出滚动</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FR-03 -->
+      <div class="fr">
+        <div class="fr-h">
+          <div class="fr-num">F-03</div>
+          <div>
+            <h3>对话引擎 · Forge Brain</h3>
+            <div class="deck">理解意图 / 反问 / 生成 / 调整</div>
+          </div>
+          <span class="pri p0">P0 · MUST</span>
+        </div>
+        <div class="fr-body">
+          <div class="req-list">
+            <div class="ri must"><div><b>简报反问</b>：首次提交后必须问 ≤ 3 个补全问题（时长 / 目标 / 受众）</div></div>
+            <div class="ri must"><div><b>多轮上下文</b>：保留整段会话历史，最长 50 轮，超出后自动总结</div></div>
+            <div class="ri must"><div><b>差异化变体</b>：在 v1 生成时同时给出 3-4 个变体，每个标注差异点和预估提升</div></div>
+            <div class="ri must"><div><b>积分计费</b>：每轮对话消耗 38 积分，余额不足时禁止发送</div></div>
+            <div class="ri should"><div><b>情绪标签</b>：Forge 气泡支持表情（happy / thinking / wink / concerned）</div></div>
+            <div class="ri should"><div><b>引用提及</b>：消息内可以 @某个变体名或分身名，自动建立链接</div></div>
+          </div>
+          <div class="ac">
+            <h5>验收 · ACCEPTANCE</h5>
+            <div class="ac-row">反问回答后 <b>≤ 12 秒</b>出 v1</div>
+            <div class="ac-row">同一意图重跑 3 次，<b>变体差异显著</b>（结构 / 文案 / 视觉至少其一）</div>
+            <div class="ac-row">积分扣减事务化，<b>失败时回滚</b></div>
+            <div class="ac-row x">不允许 Forge 在没有反问的情况下直接出 v1</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FR-04 -->
+      <div class="fr">
+        <div class="fr-h">
+          <div class="fr-num">F-04</div>
+          <div>
+            <h3>变体管理 · Variants</h3>
+            <div class="deck">命名 / 分叉 / 合并 / A/B 跑量</div>
+          </div>
+          <span class="pri p1">P1 · MUST</span>
+        </div>
+        <div class="fr-body">
+          <div class="req-list">
+            <div class="ri must"><div><b>变体树</b>：v1 → v1.a / v1.b 二级分叉，最多 3 级</div></div>
+            <div class="ri must"><div><b>状态机</b>：草稿 / 当前 / A/B 中 / 已归档 四种状态</div></div>
+            <div class="ri should"><div><b>A/B 编排</b>：选两个变体并行发布，自动按 50/50 流量分配，14 天后给冠军</div></div>
+            <div class="ri should"><div><b>变体复制</b>：一键复制变体作为新分支起点</div></div>
+            <div class="ri could"><div><b>变体合并</b>：把两个变体的局部（开场+奖励）合成第三个</div></div>
+          </div>
+          <div class="ac">
+            <h5>验收 · ACCEPTANCE</h5>
+            <div class="ac-row">同会话可创建 <b>≥ 8 个变体</b></div>
+            <div class="ac-row">A/B 跑量 14 天后自动出冠军报告</div>
+            <div class="ac-row">每个变体独立保存预估指标</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FR-05 -->
+      <div class="fr">
+        <div class="fr-h">
+          <div class="fr-num">F-05</div>
+          <div>
+            <h3>资产挂载 · Assets Mount</h3>
+            <div class="deck">把分身 / 品牌 / 模板挂进 Playable</div>
+          </div>
+          <span class="pri p1">P1 · MUST</span>
+        </div>
+        <div class="fr-body">
+          <div class="req-list">
+            <div class="ri must"><div><b>分身挂载</b>：从分身工厂选一个，自动注入语气、形象、台本</div></div>
+            <div class="ri must"><div><b>品牌挂载</b>：从品牌简报库选简报，自动注入 logo、奖池预算、合约条款</div></div>
+            <div class="ri must"><div><b>模板挂载</b>：从模板中心选一个，<code>{标的}/{奖池}/{主题}</code> 槽位自动暴露</div></div>
+            <div class="ri should"><div><b>资产冲突检测</b>：如挂的分身语气和品牌简报语气矛盾，标黄提示</div></div>
+          </div>
+          <div class="ac">
+            <h5>验收 · ACCEPTANCE</h5>
+            <div class="ac-row">挂载后 <b>≤ 2 秒</b>预览反映变化</div>
+            <div class="ac-row">资产能 <b>原子化撤销</b>（不影响其他挂载）</div>
+            <div class="ac-row">冲突告警必须可关闭</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FR-06 -->
+      <div class="fr">
+        <div class="fr-h">
+          <div class="fr-num">F-06</div>
+          <div>
+            <h3>深度体检 & 发布</h3>
+            <div class="deck">模拟 1000 玩家 + 合规扫描 + 三种发布通道</div>
+          </div>
+          <span class="pri p0">P0 · MUST</span>
+        </div>
+        <div class="fr-body">
+          <div class="req-list">
+            <div class="ri must"><div><b>模拟跑量</b>：发布前自动跑 1,000 次模拟玩家，覆盖地区/语言/设备分布</div></div>
+            <div class="ri must"><div><b>风险扫描</b>：识别风险词（涉赌 / 违禁 / 仿冒），标黄但不阻断</div></div>
+            <div class="ri must"><div><b>平台合规</b>：检查每个分发平台的特定约束（TikTok 时长 / IG 比例 / X 字符），出修改建议</div></div>
+            <div class="ri must"><div><b>三种通道</b>：8 平台一键 / Agent 世界 9 节点 / 导出工程包</div></div>
+            <div class="ri must"><div><b>健康度报告</b>：完成率、分享率、风险、合规四项打分 → 绿/黄/红</div></div>
+          </div>
+          <div class="ac">
+            <h5>验收 · ACCEPTANCE</h5>
+            <div class="ac-row">体检全流程 <b>≤ 30 秒</b></div>
+            <div class="ac-row">红灯禁止发布，<b>必须修改</b>后才能继续</div>
+            <div class="ac-row">8 平台分发 5 秒内全部排队成功</div>
+            <div class="ac-row">导出包 .zip 含 Playable + 简报 PDF + 合约</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FR-07 -->
+      <div class="fr">
+        <div class="fr-h">
+          <div class="fr-num">F-07</div>
+          <div>
+            <h3>自进化闭环</h3>
+            <div class="deck">数据回流 + 主动提建议 + 抽模板</div>
+          </div>
+          <span class="pri p2">P2 · SHOULD</span>
+        </div>
+        <div class="fr-body">
+          <div class="req-list">
+            <div class="ri must"><div><b>数据回流</b>：每 1 小时拉一次实时指标（完成率/分享/收益）回工作台</div></div>
+            <div class="ri must"><div><b>主动通知</b>：发布后 24h / 168h 各推送一次 A/B 建议，回到信息中心</div></div>
+            <div class="ri should"><div><b>学习成熟度</b>：在左栏 Forge Agent 旁显示成熟度百分比（34% → 持续上升）</div></div>
+            <div class="ri should"><div><b>模板抽取</b>：跑通的会话可一键"存为模板"，自动识别可变槽位</div></div>
+          </div>
+          <div class="ac">
+            <h5>验收 · ACCEPTANCE</h5>
+            <div class="ac-row">回流数据 <b>≤ 1 小时</b>延迟</div>
+            <div class="ac-row">24h 后的建议<b>命中率 ≥ 60%</b>（被采纳率）</div>
+            <div class="ac-row">模板抽取后立即出现在模板中心</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 04 DATA MODEL -->
+  <div class="sec" id="sec4">
+    <div class="sec-h">
+      <div class="sec-num">04</div>
+      <div>
+        <h2>数据<em>模型</em> · 6 个核心对象</h2>
+        <div class="deck">和流程蓝图中的对象一一对应</div>
+      </div>
+      <div class="right">主表 <b>6</b> · 关联 <b>11</b></div>
+    </div>
+    <div class="sec-body">
+      <div class="schema-grid">
+
+        <div class="schema">
+          <div class="schema-h">
+            <span class="obj-tag" style="background:var(--brand)">BRIEF</span>
+            <h4>意图简报</h4>
+          </div>
+          <div class="schema-body">
+            <div class="schema-row"><span class="field">id</span><span class="type">uuid</span><span class="note">主键</span></div>
+            <div class="schema-row"><span class="field">raw_intent</span><span class="type">text</span><span class="note">KOL 原句</span></div>
+            <div class="schema-row"><span class="field">target</span><span class="type">enum</span><span class="note">拉新/留存/分享/转化</span></div>
+            <div class="schema-row"><span class="field">audience</span><span class="type">string</span><span class="note">受众标签</span></div>
+            <div class="schema-row"><span class="field">duration</span><span class="type">int</span><span class="note">秒</span></div>
+            <div class="schema-row"><span class="field">tone</span><span class="type">string</span><span class="note">语气</span></div>
+            <div class="schema-row"><span class="field">session_id</span><span class="type">fk</span><span class="note">→ Session</span></div>
+          </div>
+        </div>
+
+        <div class="schema">
+          <div class="schema-h">
+            <span class="obj-tag" style="background:var(--warm)">PLAYABLE</span>
+            <h4>Playable 主件</h4>
+          </div>
+          <div class="schema-body">
+            <div class="schema-row"><span class="field">id</span><span class="type">uuid</span><span class="note">主键</span></div>
+            <div class="schema-row"><span class="field">intro</span><span class="type">jsonb</span><span class="note">开场段</span></div>
+            <div class="schema-row"><span class="field">playing</span><span class="type">jsonb</span><span class="note">玩法段</span></div>
+            <div class="schema-row"><span class="field">reward</span><span class="type">jsonb</span><span class="note">奖励段</span></div>
+            <div class="schema-row"><span class="field">prize_pool</span><span class="type">money</span><span class="note">奖池预算</span></div>
+            <div class="schema-row"><span class="field">brief_id</span><span class="type">fk</span><span class="note">→ Brief</span></div>
+          </div>
+        </div>
+
+        <div class="schema">
+          <div class="schema-h">
+            <span class="obj-tag" style="background:var(--ink-1)">VARIANT</span>
+            <h4>变体 v1 / v1.a</h4>
+          </div>
+          <div class="schema-body">
+            <div class="schema-row"><span class="field">id</span><span class="type">uuid</span><span class="note">主键</span></div>
+            <div class="schema-row"><span class="field">parent_id</span><span class="type">fk</span><span class="note">→ Variant (self)</span></div>
+            <div class="schema-row"><span class="field">playable_id</span><span class="type">fk</span><span class="note">→ Playable</span></div>
+            <div class="schema-row"><span class="field">status</span><span class="type">enum</span><span class="note">草稿/当前/A/B中/归档</span></div>
+            <div class="schema-row"><span class="field">est_completion</span><span class="type">float</span><span class="note">预估完成率</span></div>
+            <div class="schema-row"><span class="field">est_share</span><span class="type">float</span><span class="note">预估分享率</span></div>
+            <div class="schema-row"><span class="field">est_cost</span><span class="type">money</span><span class="note">每局成本</span></div>
+          </div>
+        </div>
+
+        <div class="schema">
+          <div class="schema-h">
+            <span class="obj-tag" style="background:var(--brand)">CLONE</span>
+            <h4>分身</h4>
+          </div>
+          <div class="schema-body">
+            <div class="schema-row"><span class="field">id</span><span class="type">uuid</span><span class="note">主键</span></div>
+            <div class="schema-row"><span class="field">name</span><span class="type">string</span><span class="note">Aria · Degen</span></div>
+            <div class="schema-row"><span class="field">maturity</span><span class="type">float</span><span class="note">学习成熟度 0-1</span></div>
+            <div class="schema-row"><span class="field">voice_id</span><span class="type">string</span><span class="note">语音指纹</span></div>
+            <div class="schema-row"><span class="field">script_bank</span><span class="type">jsonb[]</span><span class="note">台本库</span></div>
+          </div>
+        </div>
+
+        <div class="schema">
+          <div class="schema-h">
+            <span class="obj-tag" style="background:var(--warm)">TEMPLATE</span>
+            <h4>模板</h4>
+          </div>
+          <div class="schema-body">
+            <div class="schema-row"><span class="field">id</span><span class="type">uuid</span><span class="note">主键</span></div>
+            <div class="schema-row"><span class="field">name</span><span class="type">string</span><span class="note">60s 涨跌预言局</span></div>
+            <div class="schema-row"><span class="field">slots</span><span class="type">string[]</span><span class="note">{标的}/{奖池}/...</span></div>
+            <div class="schema-row"><span class="field">uses</span><span class="type">int</span><span class="note">已复用次数</span></div>
+            <div class="schema-row"><span class="field">best_lift</span><span class="type">string</span><span class="note">+18% CTR</span></div>
+          </div>
+        </div>
+
+        <div class="schema">
+          <div class="schema-h">
+            <span class="obj-tag" style="background:var(--ok)">METRICS</span>
+            <h4>实时指标</h4>
+          </div>
+          <div class="schema-body">
+            <div class="schema-row"><span class="field">id</span><span class="type">uuid</span><span class="note">主键</span></div>
+            <div class="schema-row"><span class="field">variant_id</span><span class="type">fk</span><span class="note">→ Variant</span></div>
+            <div class="schema-row"><span class="field">completion</span><span class="type">float</span><span class="note">完成率</span></div>
+            <div class="schema-row"><span class="field">share</span><span class="type">float</span><span class="note">分享率</span></div>
+            <div class="schema-row"><span class="field">cpm</span><span class="type">money</span><span class="note">千次成本</span></div>
+            <div class="schema-row"><span class="field">collected_at</span><span class="type">ts</span><span class="note">采集时间</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 INTEGRATIONS -->
+  <div class="sec" id="sec5">
+    <div class="sec-h">
+      <div class="sec-num">05</div>
+      <div>
+        <h2>集成<em>边界</em> · 11 个外部依赖</h2>
+        <div class="deck">工作台不重复造轮子 · 三种集成类型</div>
+      </div>
+      <div class="right">入 <b>4</b> · 出 <b>4</b> · 双向 <b>3</b></div>
+    </div>
+    <div class="sec-body">
+      <div class="int-grid">
+
+        <div class="int in">
+          <span class="arrow-tag">← IN</span>
+          <h4>分身工厂</h4>
+          <div class="desc">读取 KOL 的所有分身列表 + 成熟度 + 台本库</div>
+          <div class="who">Clones Service · gRPC</div>
+        </div>
+        <div class="int in">
+          <span class="arrow-tag">← IN</span>
+          <h4>模板中心</h4>
+          <div class="desc">读取模板树、槽位定义、最佳实例</div>
+          <div class="who">Templates Service · REST</div>
+        </div>
+        <div class="int in">
+          <span class="arrow-tag">← IN</span>
+          <h4>品牌简报库</h4>
+          <div class="desc">拉取品牌的奖池预算、合约条款、视觉规范</div>
+          <div class="who">Brand BFF · REST</div>
+        </div>
+        <div class="int in">
+          <span class="arrow-tag">← IN</span>
+          <h4>积分钱包</h4>
+          <div class="desc">查询余额、扣减积分、事务回滚</div>
+          <div class="who">Wallet Service · gRPC</div>
+        </div>
+
+        <div class="int out">
+          <span class="arrow-tag">→ OUT</span>
+          <h4>8 平台分发器</h4>
+          <div class="desc">把 Playable 推到 TikTok / IG / YouTube …</div>
+          <div class="who">Distribute Service · Queue</div>
+        </div>
+        <div class="int out">
+          <span class="arrow-tag">→ OUT</span>
+          <h4>Agent 世界</h4>
+          <div class="desc">部署到 9 个海外节点，语言/时区自动适配</div>
+          <div class="who">Agent World · gRPC</div>
+        </div>
+        <div class="int out">
+          <span class="arrow-tag">→ OUT</span>
+          <h4>工程导出器</h4>
+          <div class="desc">打包 .zip + 简报 PDF + 合约</div>
+          <div class="who">Export Service · S3</div>
+        </div>
+        <div class="int out">
+          <span class="arrow-tag">→ OUT</span>
+          <h4>合规扫描</h4>
+          <div class="desc">送审风险词 / 平台合规</div>
+          <div class="who">Compliance · REST</div>
+        </div>
+
+        <div class="int bi">
+          <span class="arrow-tag">⇄ BI</span>
+          <h4>Forge Brain</h4>
+          <div class="desc">大模型推理 + 学习反馈 + 嵌入向量</div>
+          <div class="who">Forge Core · WebSocket</div>
+        </div>
+        <div class="int bi">
+          <span class="arrow-tag">⇄ BI</span>
+          <h4>信息中心</h4>
+          <div class="desc">主动通知 + 接收用户跳转回来</div>
+          <div class="who">Notification · Pub/Sub</div>
+        </div>
+        <div class="int bi">
+          <span class="arrow-tag">⇄ BI</span>
+          <h4>反馈/品牌</h4>
+          <div class="desc">品牌方留言 + KOL 回复 + 同步状态</div>
+          <div class="who">Feedback · WebSocket</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 NFR -->
+  <div class="sec" id="sec6">
+    <div class="sec-h">
+      <div class="sec-num">06</div>
+      <div>
+        <h2>非功能<em>需求</em></h2>
+        <div class="deck">性能 / 可用性 / 安全 / 合规 / 国际化</div>
+      </div>
+      <div class="right">指标 <b>14</b></div>
+    </div>
+    <div class="sec-body">
+      <table class="nfr">
+        <thead>
+          <tr><th>类目</th><th>指标</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="k">性能</td><td class="t">v1 生成 ≤ 12s · p95</td><td class="d">意图提交到首次预览渲染完成的端到端时间</td></tr>
+          <tr><td class="k">性能</td><td class="t">每轮迭代 ≤ 8s · p95</td><td class="d">对话提交到预览刷新</td></tr>
+          <tr><td class="k">性能</td><td class="t">体检 ≤ 30s · p95</td><td class="d">1000 次模拟 + 风险 + 合规全跑完</td></tr>
+          <tr><td class="k">可用性</td><td class="t">99.5% 月度可用</td><td class="d">工作台核心 API 月度 SLO，每次掉线影响 ≤ 50 KOL</td></tr>
+          <tr><td class="k">可用性</td><td class="t">异常自动重连</td><td class="d">WebSocket 断线后 3 秒内自动重连，会话状态不丢失</td></tr>
+          <tr><td class="k">安全</td><td class="t">会话隔离</td><td class="d">每个 KOL 的会话和资产完全租户隔离，不可跨账号访问</td></tr>
+          <tr><td class="k">安全</td><td class="t">Prompt 注入防护</td><td class="d">Forge Brain 必须过滤注入指令（如忽略上文 / 越权）</td></tr>
+          <tr><td class="k">合规</td><td class="t">风险词召回 ≥ 95%</td><td class="d">涉赌、违禁、仿冒、医疗 4 类词，每月用 1000 条样本测试</td></tr>
+          <tr><td class="k">合规</td><td class="t">未成年保护</td><td class="d">如品牌简报含金融奖励，自动屏蔽未成年受众标签</td></tr>
+          <tr><td class="k">国际化</td><td class="t">5 种语言界面</td><td class="d">中英印葡西，Forge 对话支持自动语言切换</td></tr>
+          <tr><td class="k">国际化</td><td class="t">9 个节点本地化</td><td class="d">Agent 世界部署时自动翻译文案、替换地区货币符号</td></tr>
+          <tr><td class="k">可达性</td><td class="t">键盘可操作</td><td class="d">所有按钮和输入框支持 Tab 导航、屏读器朗读</td></tr>
+          <tr><td class="k">数据</td><td class="t">会话 1 年保留</td><td class="d">完整会话和变体保留 365 天，之后归档冷存</td></tr>
+          <tr><td class="k">观测</td><td class="t">全链路埋点</td><td class="d">从入口到发布的每个步骤打 trace，用于诊断"为什么会话卡住"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 07 METRICS -->
+  <div class="sec" id="sec7">
+    <div class="sec-h">
+      <div class="sec-num">07</div>
+      <div>
+        <h2>度量<em>指标</em> · 1 北极星 + 3 支持</h2>
+        <div class="deck">怎么判断这个模块成功了</div>
+      </div>
+      <div class="right">v1.0 目标</div>
+    </div>
+    <div class="sec-body">
+      <div class="metrics-grid">
+        <div class="met north">
+          <div class="label">★ NORTH STAR</div>
+          <div class="name">从意图到发布 · 中位时长</div>
+          <div class="target">≤ 5 分钟</div>
+          <div class="desc">这是工作台存在的全部理由。低于这个数，KOL 才会愿意把它当主力工具用。</div>
+        </div>
+        <div class="met">
+          <div class="label">激活率</div>
+          <div class="name">首次入口 → 发布转化</div>
+          <div class="target">≥ 45%</div>
+          <div class="desc">进入工作台并完成至少一次发布</div>
+        </div>
+        <div class="met">
+          <div class="label">迭代频率</div>
+          <div class="name">每会话对话轮次</div>
+          <div class="target">5 - 10 轮</div>
+          <div class="desc">太少：Forge 不够用 · 太多：体验不流畅</div>
+        </div>
+        <div class="met">
+          <div class="label">复用率</div>
+          <div class="name">基于模板/分身开局占比</div>
+          <div class="target">≥ 35%</div>
+          <div class="desc">资产化是规模化的前提</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 08 SCOPE -->
+  <div class="sec" id="sec8">
+    <div class="sec-h">
+      <div class="sec-num">08</div>
+      <div>
+        <h2>范围 & <em>不做</em></h2>
+        <div class="deck">v1.0 的边界 · 哪些有意识地暂不做</div>
+      </div>
+      <div class="right">In <b>14</b> · Out <b>9</b></div>
+    </div>
+    <div class="sec-body">
+      <div class="scope">
+        <div class="scope-col in">
+          <h4><span class="dot"></span> v1.0 范围内</h4>
+          <div class="scope-list">
+            <div class="scope-item"><b>三栏共创工作区</b>（左对话 / 中预览 / 右变体）</div>
+            <div class="scope-item"><b>四类入口</b>都能进工作台带上下文</div>
+            <div class="scope-item">Forge 反问 + 生成 v1 + 提变体 + 迭代</div>
+            <div class="scope-item">分身 / 品牌简报 / 模板三类资产挂载</div>
+            <div class="scope-item">深度体检（1,000 模拟）+ 风险扫描 + 平台合规</div>
+            <div class="scope-item">8 平台分发 / Agent 世界 9 节点 / 导出工程包</div>
+            <div class="scope-item">自进化通知（24h / 168h 主动 A/B 建议）</div>
+            <div class="scope-item">模板抽取（一键存为模板）</div>
+            <div class="scope-item">学习成熟度展示</div>
+            <div class="scope-item">5 语言界面 + 9 节点本地化</div>
+          </div>
+        </div>
+        <div class="scope-col out">
+          <h4><span class="dot"></span> v1.0 不做（推迟到 v1.x / v2）</h4>
+          <div class="scope-list">
+            <div class="scope-item">语音口述意图 · v1.1</div>
+            <div class="scope-item">变体合并（局部融合）· v1.2</div>
+            <div class="scope-item">多人协作工作台（KOL + 助理同时编辑）· v2</div>
+            <div class="scope-item">真人 A/B 直接接入流量（不只是模拟）· v2</div>
+            <div class="scope-item">链上奖池（USDC 智能合约直接发奖）· v2</div>
+            <div class="scope-item">Forge 自主签合同 · v2</div>
+            <div class="scope-item">第三方插件市场 · v2</div>
+            <div class="scope-item">3D / AR Playable 形态 · v2+</div>
+            <div class="scope-item">同步给品牌方实时观看 · v1.3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

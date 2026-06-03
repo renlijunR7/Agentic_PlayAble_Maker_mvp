@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>MVP 范围裁剪 · Agentic 工作台优先</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  body { background: var(--bg); padding: 32px 40px 80px; }
+  .doc { max-width: 1240px; margin: 0 auto; }
+
+  .hero {
+    display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px;
+    padding: 32px 36px; margin-bottom: 32px;
+    background:
+      radial-gradient(760px 340px at 100% 0%, rgba(91,77,255,.12), transparent 60%),
+      radial-gradient(480px 280px at 0% 100%, rgba(255,122,61,.08), transparent 60%),
+      var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 26px; box-shadow: var(--sh-md);
+  }
+  .hero .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px; background: var(--ink-1); color: white;
+    border-radius: 99px; font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .1em; margin-bottom: 16px;
+  }
+  .hero .tag::before { content: "▲"; color: var(--warm); }
+  .hero h1 {
+    font-family: "Manrope", sans-serif; font-weight: 800;
+    font-size: 40px; line-height: 1.05; letterSpacing: -.02em; margin: 0 0 14px;
+  }
+  .hero h1 em { font-style: normal; color: var(--brand); }
+  .hero h1 .w { color: var(--warm); }
+  .hero p { font-size: 14px; line-height: 1.7; color: var(--ink-2); margin: 0; max-width: 560px; }
+  .hero-side { display: flex; flex-direction: column; gap: 12px; }
+  .principle {
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--bg-1, #fafaff); border: 1px solid var(--border);
+  }
+  .principle .k { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .1em; color: var(--ink-3); font-weight: 700; margin-bottom: 5px; }
+  .principle .v { font-size: 13px; font-weight: 700; color: var(--ink-1); line-height: 1.4; }
+  .principle.brand { background: var(--brand-soft); border-color: var(--brand-line); }
+  .principle.brand .v { color: var(--brand); }
+  .principle.warm { background: var(--warm-soft); border-color: var(--warm-line); }
+  .principle.warm .v { color: var(--warm); }
+
+  .sec-label {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0 0 18px;
+  }
+  .sec-label .n {
+    font-family: "Instrument Serif", serif; font-style: italic;
+    font-size: 30px; color: var(--brand); line-height: 1;
+  }
+  .sec-label h2 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 22px; margin: 0; letter-spacing: -.015em; }
+  .sec-label h2 em { font-style: normal; color: var(--brand); }
+  .sec-label .line { flex: 1; height: 1px; background: var(--border); }
+
+  /* THE SPEAR — workbench full card */
+  .spear {
+    background: linear-gradient(135deg, #18172a 0%, #2a2240 55%, #3c2fd0 130%);
+    border-radius: 22px; padding: 28px 32px; margin-bottom: 36px;
+    color: white; position: relative; overflow: hidden;
+  }
+  .spear .glow { position: absolute; right: -60px; top: -60px; width: 320px; height: 320px; border-radius: 99px; background: radial-gradient(circle, rgba(255,122,61,.3), transparent 65%); pointer-events: none; }
+  .spear-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; position: relative; }
+  .spear-badge { padding: 5px 12px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16); border-radius: 99px; font-family: "IBM Plex Mono", monospace; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; color: #ffd0ad; }
+  .spear-head h3 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 24px; margin: 0; letter-spacing: -.015em; }
+  .spear-head h3 em { font-style: normal; color: var(--warm); font-family: "Instrument Serif", serif; font-weight: 400; font-size: 28px; }
+  .spear-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; position: relative; }
+  .spear-col h4 { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .1em; color: rgba(255,255,255,.55); font-weight: 700; margin: 0 0 10px; }
+  .spear-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .spear-col li { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; line-height: 1.45; color: rgba(255,255,255,.88); }
+  .spear-col li::before { content: "✓"; color: #7eff7c; font-weight: 700; flex-shrink: 0; }
+  .spear-foot { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.1); display: flex; gap: 28px; position: relative; }
+  .spear-foot .m .k { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: .08em; color: rgba(255,255,255,.5); font-weight: 700; }
+  .spear-foot .m .v { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 20px; margin-top: 4px; }
+  .spear-foot .m .v.w { color: var(--warm); }
+
+  /* SIMPLIFY MATRIX */
+  .matrix { display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+  .mrow {
+    display: grid; grid-template-columns: 220px 1fr 1fr 1fr; gap: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .mrow.head { background: transparent; border: none; border-radius: 0; padding: 0 0 2px; }
+  .mrow.head > div { font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .1em; color: var(--ink-3); font-weight: 700; padding: 0 18px; }
+  .m-mod {
+    padding: 18px 18px; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 6px; justify-content: center;
+    background: var(--bg-1, #fafaff);
+  }
+  .m-mod .name { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 15px; color: var(--ink-1); display: flex; align-items: center; gap: 8px; }
+  .m-mod .pr { align-self: flex-start; padding: 2px 8px; border-radius: 6px; font-family: "IBM Plex Mono", monospace; font-size: 9.5px; font-weight: 700; letter-spacing: .04em; }
+  .pr.p0 { background: #fde4e4; color: var(--bad); }
+  .pr.p1 { background: var(--warm-soft); color: var(--warm); }
+  .pr.p2 { background: var(--brand-soft); color: var(--brand); }
+  .pr.p3 { background: var(--bg-2); color: var(--ink-3); }
+  .m-cell { padding: 16px 18px; border-right: 1px solid var(--border); font-size: 12.5px; line-height: 1.55; color: var(--ink-2); }
+  .m-cell:last-child { border-right: none; }
+  .m-cell .lab { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: .06em; font-weight: 700; margin-bottom: 7px; display: inline-flex; align-items: center; gap: 5px; }
+  .m-cell .lab .dot { width: 7px; height: 7px; border-radius: 99px; }
+  .lab.keep { color: var(--ok); } .lab.keep .dot { background: var(--ok); }
+  .lab.simp { color: var(--warm); } .lab.simp .dot { background: var(--warm); }
+  .lab.cut  { color: var(--ink-4); } .lab.cut .dot { background: var(--ink-4); }
+  .m-cell ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .m-cell li { display: flex; gap: 6px; }
+  .m-cell li::before { content: "·"; color: var(--ink-4); font-weight: 700; }
+  .m-cell.cut li { color: var(--ink-3); }
+  .m-cell.cut li::before { content: "→"; color: var(--ink-4); }
+  .m-cell b { color: var(--ink-1); font-weight: 700; }
+
+  /* sequencing */
+  .seq { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .seq-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 22px 24px; position: relative; }
+  .seq-card .ph { font-family: "IBM Plex Mono", monospace; font-size: 10.5px; letter-spacing: .1em; font-weight: 700; margin-bottom: 6px; }
+  .seq-card.now .ph { color: var(--brand); }
+  .seq-card.next .ph { color: var(--warm); }
+  .seq-card.later .ph { color: var(--ink-3); }
+  .seq-card h4 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 18px; margin: 0 0 4px; letter-spacing: -.01em; }
+  .seq-card .when { font-size: 11.5px; color: var(--ink-3); margin-bottom: 14px; }
+  .seq-card ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .seq-card li { font-size: 12.5px; line-height: 1.5; color: var(--ink-2); display: flex; gap: 8px; }
+  .seq-card li::before { content: ""; width: 6px; height: 6px; border-radius: 99px; margin-top: 7px; flex-shrink: 0; }
+  .seq-card.now li::before { background: var(--brand); }
+  .seq-card.next li::before { background: var(--warm); }
+  .seq-card.later li::before { background: var(--ink-4); }
+  .seq-card.now { border-color: var(--brand-line); box-shadow: 0 12px 28px -12px rgba(91,77,255,.25); }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <div class="tag">MVP SCOPE · 一把尖刀</div>
+      <h1>MVP 只打磨<em>一件事</em>：<br/>把 <span class="w">Agentic 工作台</span> 做到能闭环</h1>
+      <p>MVP 不是"每个模块都做一点",而是<b style="color:var(--ink-1)">一个核心体验做到惊艳 + 周边模块做到刚好够用</b>。工作台是唯一的尖刀——从一句话到能发布、能结算、能回流。其余 9 个模块全部降级为"支撑工作台跑通"的最小形态,能砍的逻辑先砍,能假数据的先假数据。</p>
+    </div>
+    <div class="hero-side">
+      <div class="principle brand"><div class="k">THE ONE THING</div><div class="v">Agentic 工作台:意图 → 共创 → 发布,端到端真实可用</div></div>
+      <div class="principle warm"><div class="k">EVERYTHING ELSE</div><div class="v">只做"让工作台能跑通"所必需的最小切面</div></div>
+      <div class="principle"><div class="k">判断标准</div><div class="v">砍掉它,工作台还能完成一次完整闭环吗?能 → 砍/简化</div></div>
+    </div>
+  </div>
+
+  <!-- THE SPEAR -->
+  <div class="sec-label"><span class="n">01</span><h2>尖刀 · <em>Agentic 工作台</em> 必须完整</h2><div class="line"></div></div>
+  <div class="spear">
+    <div class="glow"></div>
+    <div class="spear-head">
+      <span class="spear-badge">FULL BUILD · 不可妥协</span>
+      <h3>这一个体验,要做到 <em>惊艳</em></h3>
+    </div>
+    <div class="spear-grid">
+      <div class="spear-col">
+        <h4>A · 意图捕获</h4>
+        <ul>
+          <li>一句话输入 + 建议起手</li>
+          <li>资料 / 分身 / 模板挂载</li>
+          <li>Forge 简报反问 3 条</li>
+        </ul>
+      </div>
+      <div class="spear-col">
+        <h4>B · 共创(主战场)</h4>
+        <ul>
+          <li>三栏:对话 / 预览 / 变体</li>
+          <li>v1 生成 + 3-4 变体</li>
+          <li>对话迭代实时刷新预览</li>
+        </ul>
+      </div>
+      <div class="spear-col">
+        <h4>C · 收束发布</h4>
+        <ul>
+          <li>体检:完成率/分享率预估</li>
+          <li>至少 1 条真实发布通道</li>
+          <li>导出 / 一键分发</li>
+        </ul>
+      </div>
+      <div class="spear-col">
+        <h4>D · 回流(轻量)</h4>
+        <ul>
+          <li>发布后指标回到工作台</li>
+          <li>1 条 A/B 建议通知</li>
+          <li>存为模板</li>
+        </ul>
+      </div>
+    </div>
+    <div class="spear-foot">
+      <div class="m"><div class="k">北极星</div><div class="v w">意图 → 发布 ≤ 5 分钟</div></div>
+      <div class="m"><div class="k">必须真实</div><div class="v">生成 · 预览 · 发布</div></div>
+      <div class="m"><div class="k">可以先假</div><div class="v">回流数据 · 模拟跑量</div></div>
+    </div>
+  </div>
+
+  <!-- SIMPLIFY MATRIX -->
+  <div class="sec-label"><span class="n">02</span><h2>其余模块 · <em>能简则简</em></h2><div class="line"></div></div>
+  <div class="matrix">
+    <div class="mrow head">
+      <div>模块 · 优先级</div>
+      <div>MVP 保留</div>
+      <div>MVP 简化</div>
+      <div>推迟到 v1.x+</div>
+    </div>
+
+    <!-- 首页 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">首页</div><span class="pr p1">P1 · 入口</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li>一句问候 + <b>直接进工作台</b>的大入口</li><li>近期任务 3 条</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>场景宫格 → 固定 6 张静态卡</li><li>今日数据 → 1 行汇总</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>个性化推荐</li><li>动态运营位</li></ul></div>
+    </div>
+
+    <!-- 我的资产 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">我的资产</div><span class="pr p1">P1 · 沉淀</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li>Playable 列表 + 预览</li><li>"升级 Agentic" 回到工作台</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>三 Tab → 只留 Playable</li><li>统计字段最小化</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>资产估值</li><li>批量管理 / 归档</li></ul></div>
+    </div>
+
+    <!-- 模板中心 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">模板中心</div><span class="pr p2">P2 · 加速</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li><b>3-5 个官方模板</b>可套用</li><li>套用即跳工作台预填</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>分类筛选 → 不做,平铺即可</li><li>槽位 = 纯文本替换</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>用户自抽模板</li><li>模板市场 / 分成</li></ul></div>
+    </div>
+
+    <!-- 最近任务 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">最近任务</div><span class="pr p2">P2 · 可视</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li>运行中 / 完成 状态列表</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>只读列表,不做干预操作</li><li>进度 = 简单百分比</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>任务编排 / 暂停重试</li><li>定时与依赖</li></ul></div>
+    </div>
+
+    <!-- 全球分发 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">全球分发</div><span class="pr p1">P1 · 出口</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li><b>1-2 个真实平台</b>可发(如 TG / X)</li><li>分发状态可见</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>其余平台 = "排队中"占位</li><li>不做横竖屏自动适配</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>8 平台全接</li><li>投放时段优化</li></ul></div>
+    </div>
+
+    <!-- 运营反馈 / 星图 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">运营反馈 · 星图</div><span class="pr p2">P2 · 回流</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li>核心指标卡:完成率/分享/收益</li><li>1 条 Forge 建议</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>星图/漏斗 → <b>先用表格</b></li><li>数据可半模拟</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>跨平台传播星图动画</li><li>自动 A/B 编排</li></ul></div>
+    </div>
+
+    <!-- 我的分身 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">我的分身</div><span class="pr p2">P2 · 差异化</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li><b>1 个</b>可挂到工作台的分身</li><li>基础语气 / 形象</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>"虚拟工作室" → 简单卡片</li><li>自主度/进化 = 展示性</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>多分身训练闭环</li><li>自进化 / 自动实验</li></ul></div>
+    </div>
+
+    <!-- Agent 世界 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">Agent 世界</div><span class="pr p3">P3 · 愿景</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li>作为"发布去向"之一存在</li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>3D 地球 → <b>静态地图/列表</b></li><li>节点数据展示性</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>多节点真实部署</li><li>本地化自动适配</li></ul></div>
+    </div>
+
+    <!-- 钱包 -->
+    <div class="mrow">
+      <div class="m-mod"><div class="name">钱包 · 资产</div><span class="pr p1">P1 · 闭环</span></div>
+      <div class="m-cell"><div class="lab keep"><span class="dot"></span>KEEP</div><ul><li>余额 + 收益拆分</li><li><b>提现(含 KYC)+ 审核跟进</b></li></ul></div>
+      <div class="m-cell"><div class="lab simp"><span class="dot"></span>SIMPLIFY</div><ul><li>1 条提现通道即可</li><li>积分兑换 = 固定汇率</li></ul></div>
+      <div class="m-cell cut"><div class="lab cut"><span class="dot"></span>LATER</div><ul><li>多通道 / 链上合约</li><li>订阅套餐多档</li></ul></div>
+    </div>
+  </div>
+
+  <!-- SEQUENCING -->
+  <div class="sec-label"><span class="n">03</span><h2>怎么排 · <em>三步走</em></h2><div class="line"></div></div>
+  <div class="seq">
+    <div class="seq-card now">
+      <div class="ph">PHASE NOW · MVP</div>
+      <h4>跑通一次闭环</h4>
+      <div class="when">目标:一个 KOL 能独立走完全程</div>
+      <ul>
+        <li>工作台 A→D 全链路真实可用</li>
+        <li>钱包提现 + KYC + 审核跟进</li>
+        <li>1-2 个真实分发通道</li>
+        <li>其余模块降级为最小支撑</li>
+        <li>数据可半模拟,体验不能假</li>
+      </ul>
+    </div>
+    <div class="seq-card next">
+      <div class="ph">PHASE NEXT · v1.x</div>
+      <h4>把支撑做厚</h4>
+      <div class="when">目标:留存与复用起来</div>
+      <ul>
+        <li>模板自抽取 + 复用率</li>
+        <li>8 平台分发补齐</li>
+        <li>星图 / 漏斗可视化上线</li>
+        <li>分身训练闭环</li>
+        <li>真实回流数据替换模拟</li>
+      </ul>
+    </div>
+    <div class="seq-card later">
+      <div class="ph">PHASE LATER · v2</div>
+      <h4>放大愿景</h4>
+      <div class="when">目标:规模化与自动化</div>
+      <ul>
+        <li>Agent 世界多节点部署</li>
+        <li>自进化 / 自动 A/B 编排</li>
+        <li>模板市场 + 分成</li>
+        <li>链上奖池 / 多通道结算</li>
+        <li>团队协作工作台</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

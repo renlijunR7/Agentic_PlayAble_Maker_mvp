@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440"/>
+<title>全球分发 · 业务流程 + 项目实现</title>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  body { background: var(--bg); padding: 32px 40px 80px; }
+  .doc { max-width: 1240px; margin: 0 auto; }
+
+  .hero {
+    padding: 30px 34px; margin-bottom: 32px;
+    background:
+      radial-gradient(720px 320px at 100% 0%, rgba(91,77,255,.12), transparent 60%),
+      radial-gradient(460px 260px at 0% 100%, rgba(255,122,61,.08), transparent 60%),
+      var(--surface);
+    border: 1px solid var(--border); border-radius: 26px; box-shadow: var(--sh-md);
+  }
+  .hero .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 12px; background: var(--ink-1); color: white;
+    border-radius: 99px; font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .1em; margin-bottom: 16px;
+  }
+  .hero .tag::before { content: "✈"; color: var(--warm); }
+  .hero h1 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 38px; line-height: 1.05; letter-spacing: -.02em; margin: 0 0 12px; }
+  .hero h1 em { font-style: normal; color: var(--brand); }
+  .hero p { font-size: 14px; line-height: 1.7; color: var(--ink-2); margin: 0; max-width: 720px; }
+
+  .sec-label { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; }
+  .sec-label .n { font-family: "Instrument Serif", serif; font-style: italic; font-size: 30px; color: var(--brand); line-height: 1; }
+  .sec-label h2 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 22px; margin: 0; letter-spacing: -.015em; }
+  .sec-label h2 em { font-style: normal; color: var(--brand); }
+  .sec-label .line { flex: 1; height: 1px; background: var(--border); }
+
+  /* business flow — horizontal stages */
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr) ; gap: 0; margin-bottom: 14px; }
+  .stage { position: relative; padding: 0 8px; }
+  .stage-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 18px 16px; height: 100%;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .stage-num {
+    width: 30px; height: 30px; border-radius: 9px; color: white;
+    display: grid; place-items: center; font-family: "Manrope", sans-serif;
+    font-weight: 800; font-size: 14px;
+  }
+  .stage h4 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 15px; margin: 2px 0 0; letter-spacing: -.01em; }
+  .stage .who { font-family: "IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: .06em; font-weight: 700; }
+  .stage ul { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+  .stage li { font-size: 11.5px; line-height: 1.45; color: var(--ink-2); display: flex; gap: 6px; }
+  .stage li::before { content: "·"; color: var(--ink-4); font-weight: 700; }
+  .stage .arrow { position: absolute; right: -7px; top: 46px; z-index: 3; color: var(--ink-4); }
+  .stage:last-child .arrow { display: none; }
+
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 36px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 22px 24px; }
+  .panel h3 { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 17px; margin: 0 0 4px; }
+  .panel .sub { font-size: 12px; color: var(--ink-3); margin-bottom: 16px; }
+  .panel ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .panel li { display: flex; gap: 10px; font-size: 12.5px; line-height: 1.5; color: var(--ink-2); }
+  .panel li .k { font-family: "IBM Plex Mono", monospace; font-size: 10px; font-weight: 700; color: var(--brand); background: var(--brand-soft); padding: 2px 6px; border-radius: 5px; flex-shrink: 0; height: fit-content; }
+  .panel li b { color: var(--ink-1); }
+
+  /* implementation table */
+  .impl { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; margin-bottom: 18px; }
+  .impl table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .impl th { text-align: left; padding: 12px 18px; font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: .08em; color: var(--ink-3); font-weight: 700; background: var(--bg-1, #fafaff); border-bottom: 1px solid var(--border); }
+  .impl td { padding: 13px 18px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  .impl tr:last-child td { border-bottom: none; }
+  .impl td.ui { font-weight: 700; color: var(--ink-1); width: 200px; }
+  .impl td.code { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--brand); width: 230px; }
+  .impl td.desc { color: var(--ink-2); }
+  .impl .badge { display: inline-block; padding: 1px 7px; border-radius: 5px; font-size: 10px; font-weight: 700; font-family: "IBM Plex Mono", monospace; }
+  .b-ok { background: var(--ok-soft); color: var(--ok); }
+  .b-warn { background: var(--warm-soft); color: var(--warm); }
+  .b-mock { background: var(--bg-2); color: var(--ink-3); }
+
+  /* status legend */
+  .states { display: flex; gap: 12px; flex-wrap: wrap; }
+  .state { flex: 1; min-width: 150px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); }
+  .state .dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; margin-right: 7px; }
+  .state .nm { font-family: "Manrope", sans-serif; font-weight: 800; font-size: 14px; }
+  .state .d { font-size: 11.5px; color: var(--ink-3); margin-top: 5px; line-height: 1.45; }
+
+  .note { margin-top: 6px; padding: 16px 20px; background: linear-gradient(95deg, var(--brand-soft), var(--warm-soft)); border-radius: 14px; font-size: 12.5px; color: var(--ink-2); line-height: 1.6; }
+  .note b { color: var(--ink-1); }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="hero">
+    <div class="tag">GLOBAL DISTRIBUTE · 业务 + 实现</div>
+    <h1>全球<em>分发</em>：从一个定稿 Playable<br/>到 8 平台 × 多地域同时跑量</h1>
+    <p>分发是「营销」这一段的出口——把工作台产出的 Playable 推到各平台、各地域，由 Forge 按时机自动投放、回收数据、再决定扩量或暂停。本文上半部分讲<b>业务流程</b>（谁、做什么、为什么），下半部分对照 <code>distribute.jsx</code> 讲<b>项目里怎么落地的</b>。</p>
+  </div>
+
+  <!-- BUSINESS FLOW -->
+  <div class="sec-label"><span class="n">01</span><h2>业务<em>流程</em> · 5 步</h2><div class="line"></div></div>
+  <div class="flow">
+    <div class="stage">
+      <div class="stage-card">
+        <div class="stage-num" style="background:var(--brand)">1</div>
+        <div class="who" style="color:var(--ink-3)">来源 · 工作台</div>
+        <h4>定稿入列</h4>
+        <ul><li>Playable 在工作台通过体检</li><li>选好要分发的变体 (v1.c…)</li><li>进入分发队列</li></ul>
+      </div>
+      <div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    </div>
+    <div class="stage">
+      <div class="stage-card">
+        <div class="stage-num" style="background:var(--warm)">2</div>
+        <div class="who" style="color:var(--ink-3)">Forge · 规划</div>
+        <h4>选平台 + 地域 + 时机</h4>
+        <ul><li>按受众画像匹配平台</li><li>按时区选最佳投放时段</li><li>横竖屏 / 时长自动适配</li></ul>
+      </div>
+      <div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    </div>
+    <div class="stage">
+      <div class="stage-card">
+        <div class="stage-num" style="background:#b03a72">3</div>
+        <div class="who" style="color:var(--ink-3)">合规 · 闸门</div>
+        <h4>合规复核</h4>
+        <ul><li>风险词 / 平台规则扫描</li><li>未成年 / 金融奖励限制</li><li>过审才能上线</li></ul>
+      </div>
+      <div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    </div>
+    <div class="stage">
+      <div class="stage-card">
+        <div class="stage-num" style="background:var(--ok)">4</div>
+        <div class="who" style="color:var(--ink-3)">系统 · 投放</div>
+        <h4>多平台并发上线</h4>
+        <ul><li>各平台 API / 队列推送</li><li>运营中 / 待审 / 暂停状态</li><li>30 秒刷新实时数据</li></ul>
+      </div>
+      <div class="arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+    </div>
+    <div class="stage">
+      <div class="stage-card">
+        <div class="stage-num" style="background:var(--brand)">5</div>
+        <div class="who" style="color:var(--ink-3)">回收 · 闭环</div>
+        <h4>回收 → 扩量 / 暂停</h4>
+        <ul><li>完成局 / CTR / 分享 / 收入</li><li>表现好 → 一键扩量</li><li>数据回流喂回 Forge</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="note">
+    <b>关键角色分工：</b>KOL 只在两处拍板——① 选哪个变体去分发、② 是否同意 Forge 规划的「即将分发」与「扩量」。其余（选平台、定时机、适配、合规、投放、回收）全部由 <b>Forge + 系统</b> 自动完成。
+  </div>
+
+  <!-- INPUT / OUTPUT -->
+  <div class="sec-label" style="margin-top:36px"><span class="n">02</span><h2>每个 Playable 的<em>输入与产出</em></h2><div class="line"></div></div>
+  <div class="twocol">
+    <div class="panel">
+      <h3>输入 · 一条分发任务带什么</h3>
+      <div class="sub">这些字段决定一次投放怎么跑</div>
+      <ul>
+        <li><span class="k">变体</span><span><b>Pump or Dump · v1.c</b> —— 要分发的具体版本</span></li>
+        <li><span class="k">平台</span><span>TikTok / IG / YouTube / X / FB / Snap … 目标渠道</span></li>
+        <li><span class="k">地域</span><span><b>ID / VN / TH</b> —— 语言与时区，决定适配与时机</span></li>
+        <li><span class="k">时机</span><span>Forge 规划的投放时段（如「今晚 22:00」）</span></li>
+        <li><span class="k">合规</span><span>风险词 + 平台规则 + 受众限制的检测结果</span></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>产出 · 一条分发任务回收什么</h3>
+      <div class="sub">实时回流，喂回 Forge 决策</div>
+      <ul>
+        <li><span class="k">完成局</span><span><b>plays</b> —— 多少玩家玩完一局</span></li>
+        <li><span class="k">收入</span><span><b>earn</b> —— 该平台带来的净入账</span></li>
+        <li><span class="k">CTR</span><span>点击 / 进入率，衡量钩子强度</span></li>
+        <li><span class="k">分享</span><span>分享率，衡量传播力（X 高分享 22.4%）</span></li>
+        <li><span class="k">状态</span><span>运营中 / 待审 / 暂停 —— 决定下一步</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- IMPLEMENTATION -->
+  <div class="sec-label"><span class="n">03</span><h2>项目里<em>怎么实现</em> · 对照 distribute.jsx</h2><div class="line"></div></div>
+  <div class="impl">
+    <table>
+      <thead>
+        <tr><th>界面区块</th><th>代码位置 / 数据</th><th>承担的业务步骤</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ui">页头 KPI 四格</td>
+          <td class="code">{ 今日完成局, 今日收入,<br/>活跃平台 4/8, 待扩量 3 }</td>
+          <td class="desc">分发的<b>总览态</b>：一眼看全局健康度 —— 对应业务步骤 5（回收）的聚合。<span class="badge b-warn">数据可半模拟</span></td>
+        </tr>
+        <tr>
+          <td class="ui">分发到 8 平台<br/>（platforms 表格）</td>
+          <td class="code">platforms[] · Brand 图标<br/>plays / earn / ctr / share</td>
+          <td class="desc">业务步骤 4-5 的主视图。每行一个平台，带地域 + 状态标签 + 实时四指标。<span class="badge b-ok">核心 · 真实</span></td>
+        </tr>
+        <tr>
+          <td class="ui">状态标签<br/>运营中 / 待审 / 暂停</td>
+          <td class="code">p.status · dim 逻辑<br/>tag ok / warn</td>
+          <td class="desc">承载业务步骤 3（合规闸门）与 4（投放）的结果——待审=合规中，暂停=人工/风控停。</td>
+        </tr>
+        <tr>
+          <td class="ui">即将分发<br/>（upcoming 卡）</td>
+          <td class="code">upcoming[] · eta / action</td>
+          <td class="desc">业务步骤 2（Forge 规划）的可视化——下一波要去哪、何时、卡在哪（等素材 / 审核中 / 等品牌方）。<span class="badge b-ok">核心 · 真实</span></td>
+        </tr>
+        <tr>
+          <td class="ui">一键扩量 / 新增平台</td>
+          <td class="code">btn warm「一键扩量」<br/>「新增平台」「计划新分发」</td>
+          <td class="desc">KOL 的两个拍板入口——确认扩量、手动加渠道。点击后下发新分发任务。</td>
+        </tr>
+        <tr>
+          <td class="ui">7 天趋势图</td>
+          <td class="code">SVG path · 完成局 + 收入<br/>7/30/90 日切换</td>
+          <td class="desc">回收数据的时间序列，判断分发整体在涨还是在掉。<span class="badge b-mock">先用静态曲线</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- STATE MACHINE -->
+  <div class="sec-label" style="margin-top:36px"><span class="n">04</span><h2>平台分发<em>状态机</em></h2><div class="line"></div></div>
+  <div class="states">
+    <div class="state"><div class="nm"><span class="dot" style="background:var(--ok)"></span>运营中</div><div class="d">已上线并回收数据，正常计入完成局与收入。可扩量。</div></div>
+    <div class="state"><div class="nm"><span class="dot" style="background:var(--warm)"></span>待审</div><div class="d">合规复核中 / 平台审核中，未开始投放。过审后转「运营中」。</div></div>
+    <div class="state"><div class="nm"><span class="dot" style="background:var(--ink-4)"></span>暂停</div><div class="d">人工或风控暂停，数据冻结。可重新启用或下线。</div></div>
+    <div class="state"><div class="nm"><span class="dot" style="background:var(--brand)"></span>排队中</div><div class="d">已规划未到时机（如「今晚 22:00」），到点自动上线。</div></div>
+  </div>
+
+  <div class="note" style="margin-top:18px">
+    <b>MVP 取舍：</b>分发是闭环不能砍的「出口」，但 MVP 阶段只需接通 <b>1-2 个真实平台</b>（如 TikTok / X），其余平台用「待审 / 暂停」占位；趋势图与部分指标可半模拟。等留存跑起来再补齐 8 平台与投放时段优化。
+  </div>
+
+</div>
+</body>
+</html>
